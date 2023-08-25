@@ -1,0 +1,2 @@
+[29-Dec-2022 09:49:01 UTC] PHP Fatal error:  Cannot declare class AddStepsColumnUserEvents, because the name is already in use in /home4/impalt9y/public_html/work/oceansme/projectapp/database/migrations/2022_12_20_100828_add_request_column_user_events.php on line 7
+[18-Jan-2023 13:23:50 UTC] PHP Fatal error:  Cannot declare class QuestionsColumnPosts, because the name is already in use in /home4/impalt9y/public_html/work/oceansme/projectapp/database/migrations/2022_12_30_080623_dep_questions_column_posts.php on line 7

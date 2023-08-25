@@ -1,0 +1,58 @@
+{
+	"messages":
+	{
+		"eventsAction":
+		{
+			"save":
+			{
+				"updated":"Event updated successfully.",
+				"saved":"Event created successfully."
+			}
+		},
+		"commonMessage":
+		{
+			"errors":
+			{
+				"err_500":"Something went wrong."
+			},
+			"save":
+			{
+				"msg":"Data saved successfully."
+			},
+			"update":
+			{
+				"msg":"Data updated successfully."
+			},
+			"delete":
+			{
+				"msg":"Data deleted successfully."
+			}
+		},
+		"candidateMessage":
+		{
+			"jobMailText":
+			{
+				"1":"You have applied successfully for this event.",
+				"2":"Your profile is incomplete for this event.",
+				"3":"You are rejected for this event.",
+				"4":"Your profile is duplicate.",
+				"5":"You have declined this event confirmation.",
+				"6":"You are selected for this event's interview.",
+				"7":"You are selected for this event's interview. Please give your resposne.",
+				"8":"Your application for this event is being hold for some reasons.",
+				"9":"You are attending the interview of this event. Please check your interview schedule.",
+				"10":"You event status is set to Walkin."
+			},"jobAttendingMailText":
+			{
+				"1":"You are attending the event's interview.",
+				"2":"You have declined the LOI.",
+				"3":"You are selected for this job.",
+				"4":"You have accepted the LOI and attending the job.",
+				"5":"You are rejected for this event's interview.",
+				"7":"You are selected for this job. Please give your resposne.",
+				"8":"You are pending for this event's interview.",
+				"9":"You are skipped by an interviewer for another interviewer."
+			}
+		}
+	}
+}     
