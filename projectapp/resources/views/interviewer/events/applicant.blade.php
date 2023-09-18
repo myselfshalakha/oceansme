@@ -91,7 +91,17 @@ $userEventStatus=isset($_GET["status"])?$_GET["status"]:"";
 												<td>{{\App\Models\Country::find($applicant->nationality)->name ?? "n/a"}}</td>
 
 												<td>{{ $applicant->position ?? 'n/a'}}</td>
-												<td>{{ \App\Models\Posts::find($applicant->post_apply)->name}}</td>
+												<td>
+													<?php $post= \App\Models\Posts::find($applicant->post_apply) ?>
+													{{ $post->name}}
+													@if(!empty($post->rank))
+														- {{$post->rank}}
+													@endif
+													@if(!empty($post->rank_position))
+														- {{$post->rank_position}}
+													@endif
+												
+												</td>
 												<td>{{ getExperienceText($applicant->exp_years,$applicant->exp_months) }}</td>
 												<td>n/a</td>
 

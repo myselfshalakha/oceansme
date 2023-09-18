@@ -69,7 +69,14 @@ $user_response_status=get_user_response_status();
 							if(!empty($event->post_id)){
 								$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
 								foreach($requiredPosts as $post){
-									$postname.= $post->name . ", ";
+									$postname.= $post->name;
+									if(!empty($post->rank)){
+										$postname.= " - ".$post->rank;
+									}
+									if(!empty($post->rank_position)){
+										$postname.= " - ".$post->rank_position;
+									}
+									$postname.= ", ";
 								}
 							}
 						$postname=rtrim($postname, ", ");
@@ -481,11 +488,17 @@ $user_response_status=get_user_response_status();
 												<div class="media-body">
 												  <p class="card-text">
 												  @if(!empty($applicant->post_apply))
-														@foreach($requiredPosts as $post)
-															 @if($applicant->post_apply==$post->id)
-																{{\App\Models\Department::find($applicant->uev_dep_id)->name}} - {{$post->name}}
-															@endif
-														@endforeach
+														 <?php
+															$postdetails=\App\Models\Posts::find($applicant->post_apply);
+															echo \App\Models\Department::find($postdetails->dep_id)->name." - ";
+															echo $postdetails->name;
+															if(!empty($postdetails->rank)){
+																echo " - ".$postdetails->rank;
+															}
+															if(!empty($postdetails->rank_position)){
+																echo " - ".$postdetails->rank_position;
+															}
+															?>
 													@else
 														n/a
 													@endif

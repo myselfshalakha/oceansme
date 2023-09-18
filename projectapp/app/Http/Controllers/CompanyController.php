@@ -108,8 +108,9 @@ class CompanyController extends Controller
                 break;
 			case 'getPost':
                  $options = Posts::where('dep_id', $request->id)->get();
+                 $ispost = true;
                  $other = false;
-                return view('components.getOptions', compact('options','other'));
+                return view('components.getOptions', compact('options','other','ispost'));
                 break;
 			case 'getCity':
                  $options = City::where('state_id', $request->id)->get();
@@ -153,6 +154,7 @@ class CompanyController extends Controller
 		$company->city_id  = $data->city ;
 		$company->country_id = $data->country ;
 		$company->state_id = $data->state;
+		$company->evaluate_by_company =$data->evaluate_by_company ;
 		$company->name =$data->name ;
 		$company->address =$data->address ;
 		$company->address2 =$data->landmark ;
@@ -176,18 +178,27 @@ class CompanyController extends Controller
 		$salary->dep_id  = $data->dep_id ;
 		$salary->post_id = $data->post_id ;
 		$salary->company_id = $data->company_id;
-		$salary->basic_wage =$data->basic_wage ;
+		/* $salary->basic_wage =$data->basic_wage ;
 		$salary->other_contractual =$data->other_contractual ;
 		$salary->guaranteed_wage =$data->guaranteed_wage ;
 		$salary->service_charge =$data->service_charge ;
 		$salary->additional_bonus =$data->additional_bonus ;
 		$salary->bonus_level =$data->bonus_level ;
 		$salary->bonus_personam = $data->bonus_personam ;
-		$salary->total_salary = $data->total_salary ;
 		$salary->incentive_type = $data->incentive_type ;
+		$salary->status = $data->status ; */
+		$salary->total_salary = $data->total_salary ;
+		$salary->min_eng = $data->min_eng ;
 		$salary->contract_length = $data->contract_length ;
+		$salary->contract_length_loi = $data->contract_length_loi ;
 		$salary->vacation_month = $data->vacation_month ;
-		$salary->status = $data->status ;
+		$salary->start_up = $data->start_up ;
+		$salary->first_reliever = $data->first_reliever ;
+		$salary->contract_currency = $data->contract_currency ;
+		$salary->seniority = $data->seniority ;
+		$salary->level_additional_comp = $data->level_additional_comp ;
+		$salary->seniority_range = $data->seniority_range ;
+	
         if($salary->save()){
              
             return true;
@@ -206,6 +217,9 @@ class CompanyController extends Controller
             }
         }
         catch(Exception $e) {
+          return 'Company associcated with many records. Cannot delete it directly.';
+        }
+		 catch(Error $e) {
           return 'Company associcated with many records. Cannot delete it directly.';
         }
 		

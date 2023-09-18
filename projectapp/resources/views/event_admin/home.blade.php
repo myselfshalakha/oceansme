@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="cstm_event_admin_home cstm_common_admin">
   <div class="row dash-board-count-box">
 
         
@@ -36,7 +37,7 @@
 										<th>Company</th>
 										<th>Event Admin</th>
 										<th>Evaluator</th>
-										<th>Post</th>
+										<th>Postitions</th>
 										<th>Action</th>
                                       </tr>
                                     </thead>
@@ -45,7 +46,7 @@
 										 
 										@foreach($eventList as $event)
 											<tr>
-												<td>{{ $event->name }}</br>
+												<td>{{ $event->name }}
 												<?php echo get_event_status_badge($event->status) ?>
 															
 												</td>
@@ -60,8 +61,16 @@
 															<?php
 																$postname="";
 																if(!empty($event->post_id)){
-																	foreach(unserialize($event->post_id) as $post_id){
-																		$postname.= \App\Models\Posts::find($post_id)->name . ", ";
+																	$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
+																	foreach($requiredPosts as $post){
+																		$postname.= $post->name;
+																		if(!empty($post->rank)){
+																			$postname.= " - ".$post->rank;
+																		}
+																		if(!empty($post->rank_position)){
+																			$postname.= " - ".$post->rank_position;
+																		}
+																		$postname.= ", ";
 																	}
 																}
 															$postname=rtrim($postname, ", ");
@@ -84,5 +93,5 @@
                             </div>
                           </div>
                         </div>
-                     
+</div>           
 @endsection

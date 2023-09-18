@@ -382,6 +382,13 @@
 														@foreach($requiredPosts as $post)
 															 @if($applicant->post_apply==$post->id)
 																{{\App\Models\Department::find($applicant->uev_dep_id)->name}} - {{$post->name}}
+															
+																@if(!empty($post->rank))
+																	- {{$post->rank}}
+																@endif
+																@if(!empty($post->rank_position))
+																	- {{$post->rank_position}}
+																@endif
 															@endif
 														@endforeach
 													@else

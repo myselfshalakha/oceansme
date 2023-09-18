@@ -1,15 +1,13 @@
 @extends('layouts.app')
 @section('content') 
-<div class="row justify-content-center">
+<div class="cstm_post_admin_create cstm_common_admin">
+	<div class="row justify-content-center">
       <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
                   <div class="template-demo">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-primary">Posts Settings</button>
-                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        
-                      </button>
+					   <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Posts Settings</button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuSplitButton1">
                         <a class="dropdown-item" href="{{ route('admin.post') }}/add">Add</a>
                         <a class="dropdown-item" href="{{ route('admin.post') }}">List</a>
@@ -48,15 +46,21 @@
 									@if(isset($post)) <input type="hidden" name="id" value="{{ $post->id }}"> @endif
 									
 									<div class="row mb-3">
-										<label for="name" class="col-md-4 col-form-label text-md-end">Post Name<span class="required_star">*</span></label>
+										<label for="name" class="col-md-4 col-form-label text-md-end">Job Position / Job Title<span class="required_star">*</span></label>
 										<div class="col-md-6">
-										<input type="text" name="name" class="form-control" placeholder="Post Name" value="@if(isset($post)){{ $post->name }}@endif">
+										<input type="text" name="name" class="form-control" placeholder="Job Position / Job Title" value="@if(isset($post)){{ $post->name }}@endif">
 										</div>
 									</div>
 									<div class="row mb-3">
-										<label for="rank" class="col-md-4 col-form-label text-md-end">Post Rank</label>
+										<label for="rank" class="col-md-4 col-form-label text-md-end">Rank</label>
 										<div class="col-md-6">
-										<input type="text" name="rank" class="form-control" placeholder="Post Rank" value="@if(isset($post)){{ $post->rank }}@endif">
+										<input type="text" name="rank" class="form-control" placeholder="Rank" value="@if(isset($post)){{ $post->rank }}@endif">
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label for="rank_position" class="col-md-4 col-form-label text-md-end">Rank Position</label>
+										<div class="col-md-6">
+										<input type="text" name="rank_position" class="form-control" placeholder="Rank Position" value="@if(isset($post)){{ $post->rank_position }}@endif">
 										</div>
 									</div>
 									<div class="row mb-3">
@@ -91,4 +95,5 @@
 			</div>
 		</div>
 	</div>
+</div>
 @endsection

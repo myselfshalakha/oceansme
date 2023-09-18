@@ -86,21 +86,26 @@ class AttendingEventActivity extends Notification  implements ShouldQueue
 				// Convert the PDF to an attachment using Pdfcrowd API
 				$client = new \Pdfcrowd\HtmlToPdfClient("demo", "ce544b6ea52a5621fb9d55f8b542d14d");
 				 if($company->id=="26"){
-				$headerHtml = '<div style="width: 100%;">
-					<img src="'.url('/').'/assets/images/company/'.$company->logo.'" alt="logo" style="max-width: 100%; height: 130px; object-fit: contain; display: block; margin: 0px auto; padding: 30px 0px">
-					<p style="font-weight: 400; font-size: 14px; letter-spacing: 1px; color: #666666; text-transform: uppercase; padding-bottom: 80px; text-align: center;"> Private & Confidential </p>
-				</div>';
+				
+				$headerHtml = '<table style="width: 100%;">
+								<tr>
+									<td> <img src="'.url('/').'/assets/images/company/'.$company->logo.'" alt="logo" style="max-width: 100%; height: 91px; object-fit: contain; display: block; padding: 30px 0px"></td>
+								</tr>
+							</table>';
 				$footerHtml = '<div style="width: 100%;">
 					<p style="text-align: left;font-size: 14px;font-weight: 600; margin: 0px; padding: 50px 20px 30px 0px; line-height: 1.5em; text-align: right;"> Page <span class="pdfcrowd-page-number"></span> of <span class="pdfcrowd-page-count" style="font-weight: bold"></span></p>
 				</div>';
+		
 				$client->setHeaderHtml($headerHtml);
 				$client->setHeaderHeight('2.5in');
 				$client->setFooterHeight('1.5in');
 				$client->setFooterHtml($footerHtml);
 				 }else{
-				$headerHtml = '<div style="width: 100%;">
-			<img src="'.url('/').'/assets/images/company/'.$company->logo.'" alt="logo" style="max-width: 100%; height: 91px; object-fit: contain; display: block; padding: 30px 0px 30px 20px">
-		</div>';
+					$headerHtml = '<table style="width: 100%;">
+								<tr>
+									<td> <img src="'.url('/').'/assets/images/company/'.$company->logo.'" alt="logo" style="max-width: 100%; height: 91px; object-fit: contain; display: block; padding: 30px 0px"></td>
+								</tr>
+							</table>';
 				$footerHtml = '<div style="width: 100%;">
 			<p style="text-align: center;font-size: 14px;font-weight: 600; margin: 0px; line-height: 1.5em;"><span class="pdfcrowd-page-number">1</span></span>
 			<ul style=" list-style: none; text-align: right; padding: 0px 20px;">

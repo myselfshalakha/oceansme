@@ -1,15 +1,13 @@
 @extends('layouts.app')
 @section('content') 
-<div class="row justify-content-center">
+<div class="cstm_departments_admin_create cstm_common_admin">
+	<div class="row justify-content-center">
       <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
                   <div class="template-demo">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-primary">Department Settings</button>
-                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        
-                      </button>
+                       <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Department Settings</button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuSplitButton1">
                         <a class="dropdown-item" href="{{ route('admin.department') }}/add">Add</a>
                         <a class="dropdown-item" href="{{ route('admin.department') }}">List</a>
@@ -118,5 +116,5 @@
 	</div>
 	</div>
 	</div>   
-	
+</div>
 @endsection

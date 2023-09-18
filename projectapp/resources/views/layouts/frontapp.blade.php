@@ -23,7 +23,11 @@
      <nav class="navbar navbar-expand-lg navbar-default navbar-fixed-top  hestia_center navbar-scroll-point">
   <a class="navbar-brand" href="{{ url('/') }}"><img src="{{ asset('/assets/images/frontpage/logo-brand.png') }}"></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+  <span class="menu-toggler-icon"> 
+    <span class="cc1"></span>
+	<span class="cc2"></span>
+	<span class="cc3"></span>
+	</span>
   </button>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">

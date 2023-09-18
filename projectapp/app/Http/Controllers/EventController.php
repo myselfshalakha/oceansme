@@ -102,10 +102,9 @@ class EventController extends Controller
 				$event_admins = DB::table('users')->select('users.id','users.name')->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')->where('role_user.role_id', '=', 3)->get();
 				$evaluators = DB::table('users')->select('users.id','users.name')->leftjoin('role_user', 'users.id', '=', 'role_user.user_id')->where('role_user.role_id', '=', 4)->get();
                 $event = Events::find($applicant->event_id);
-				$posts=Posts::find($applicant->post_assigned);
-				$department=Department::find($posts->dep_id); 
-				$current_company=CompanySalarySystem::where("post_id",$applicant->post_assigned)->where("company_id",$event->company_id)->first();
-				$applicant_salary =get_company_salaryBy_Id($current_company->id); 
+				$applicant_salary=CompanySalarySystem::find($applicant->post_assigned);
+				$posts=Posts::find($applicant_salary->post_id);
+				$department=Department::find($applicant_salary->dep_id); 
                 return view($showview, compact('event','companies','event_admins','evaluators','applicant','department','applicant_salary'));
                 break;
 				
@@ -234,7 +233,7 @@ class EventController extends Controller
 				//$pdfContent = Shortcode::compile(\App\Models\Company::find($event->company_id)->loi);
 				$user = User::find($event->user_id);
 				$company=Company::find($event->company_id);
-				$companySalarySystem = CompanySalarySystem::where('company_id', $event->company_id)->where('post_id', $event->post_assigned)->first();
+				$companySalarySystem = CompanySalarySystem::find($event->post_assigned);
 
 				$pdfContent = get_company_loi_html($event,$company,$companySalarySystem,$user);
 
@@ -246,14 +245,6 @@ class EventController extends Controller
 				$response=Notification::send($user,new AttendingEventActivity($details)); 
 				}
                 return response()->json(['success'=>true,'message'=>"LOI sent successfully"],200);
-                break;
-			case 'save__salary':
-                $response = $this->save__salaryUserEvent($request);
-                if($response === true){
-                    return response()->json(['success'=>true,'message'=>'Status changed successfully.'],200);
-                }else{
-                    return response()->json(['success'=>false,'message'=>get_after_action_response("commonMessage","errors","err_500")],200);
-                }
                 break;
 			case 'change_interviewer':
                 $response = $this->change_interviewerApplicant($request);
@@ -520,6 +511,19 @@ class EventController extends Controller
 					$showview="evaluator.events.applicant";
 				}elseif(Auth::user()->hasRole('event_admin')){
 					$showview="event_admin.events.applicant";
+				}elseif(Auth::user()->hasRole('hr_manager')){
+					$event_info = DB::table('events')->select('events.id')->join('event_teams', 'event_teams.event_id', '=', 'events.id')->where('event_teams.user_id','=', Auth::user()->id)->where('events.id','=', $_GET['id'])->whereIn('status', ["1","2","3"])->first();
+					
+					if(!isset($event_info->id) || empty($event_info->id)){
+						return redirect('/404');
+					}
+					$company_info = DB::table('companies')->select('companies.evaluate_by_company')->join('event_teams', 'event_teams.company_id', '=', 'companies.id')->where('event_teams.user_id','=', Auth::user()->id)->first();
+
+					if(isset($company_info->evaluate_by_company) && $company_info->evaluate_by_company=="yes"){
+					$showview="hr_manager.events.applicant";
+					}else{
+						return redirect('/404');
+					}
 				}else{
 					  return redirect('/404');
 				}
@@ -584,10 +588,12 @@ class EventController extends Controller
 				}elseif(Auth::user()->hasRole('event_admin')){
 					$showview="event_admin.events.applicant-info";
 				}elseif(Auth::user()->hasRole('hr_manager')){
-					$showview="hr_manager.events.applicant-info";
+						$showview="hr_manager.events.applicant-info";
 				}else{
 					  return redirect('/404');
 				}
+
+				
 				$posts=null;
 				$department=null;
 				$current_company=null;
@@ -600,11 +606,24 @@ class EventController extends Controller
 						->select('user_events.id as uev_id','user_events.status as uev_status','user_events.dep_id as uev_dep_id','user_events.*','event_attendings.id as uevatt_id','event_attendings.event_info as att_event_info','event_attendings.status as att_status', 'event_attendings.*', 'users.id as u_id', 'users.*', 'user_bios.id as ubio_id', 'user_bios.*')
 						->where('user_events.id','=',$_GET['id'])
 						->first();
-					$event = Events::find($applicant->event_id);	
-					$posts=Posts::find($applicant->post_assigned);
-					$department=Department::find($posts->dep_id); 
-					$current_company=CompanySalarySystem::where("post_id",$applicant->post_assigned)->where("company_id",$event->company_id)->first();
-					$applicant_salary =get_company_salaryBy_Id($current_company->id); 
+					if(!empty($applicant)){
+						$event = Events::find($applicant->event_id);	
+						$applicant_salary=CompanySalarySystem::find($applicant->post_assigned);
+						$posts=Posts::find($applicant_salary->post_id);
+						$department=Department::find($posts->dep_id); 
+						$showview="hr_manager.events.applicant-info-attending";	
+					}else{	
+						$company_info = DB::table('companies')->select('companies.evaluate_by_company')->join('event_teams', 'event_teams.company_id', '=', 'companies.id')->where('event_teams.user_id','=', Auth::user()->id)->first();
+						if(isset($company_info->evaluate_by_company) && $company_info->evaluate_by_company!="yes"){
+							return redirect('/404');
+						}
+						$applicant = DB::table('user_events')
+						->join('users', 'user_events.user_id', '=', 'users.id')
+						->join('user_bios', 'user_events.user_id', '=', 'user_bios.user_id')
+						->select('user_events.id as uev_id','user_events.status as uev_status','user_events.dep_id as uev_dep_id', 'user_events.*', 'users.id as u_id', 'users.*', 'user_bios.*')
+						->where('user_events.id','=',$_GET['id'])
+						->first();
+					}
 				}else{
 					$applicant = DB::table('user_events')
 						->join('users', 'user_events.user_id', '=', 'users.id')
@@ -862,10 +881,10 @@ class EventController extends Controller
 				} 
 			break;
 			case 'salary_details_applicant':
-			if(!isset($request->id) || !isset($request->postid) ){
+			if(!isset($request->id) || !isset($request->salaryid) ){
 				return redirect('/404');
 			}
-                 $data = CompanySalarySystem::where('company_id', $request->id)->where('post_id', $request->postid)->first();
+                 $data = CompanySalarySystem::find($request->salaryid);
 				$salary=make_table_with_salary_info($data);
 				if(isset($data->dep_id)){
 				$department=\App\Models\Department::find($data->dep_id);
@@ -932,22 +951,48 @@ class EventController extends Controller
 			foreach(unserialize($event->interview_questions) as $question){
 				$questions[]=$question['question'];
 			}
-			$columns = array('RegNo','Name', 'Email', 'Country', 'Nationality', 'Current Position','Position Applying','Position Assigned','Experience','Schedule','Basic Wage','Other Contractual','Guaranteed Wage','Service Charge','Additional Bonus','Bonus Level','Bonus Personam','Total Salary','Incentive Type','Contract Length','Vacation Month','Interview Status');
+			
+			if($event->company_id==26){
+				$columns = array('RegNo','Name', 'Email', 'Country', 'Nationality', 'Current Position','Position Applying','Position Assigned','Experience','Schedule','Contract Length LOI','Total Salary','Min Eng','Vacation Month','Start-up','First Reliever');
+			}else{
+				
+				$columns = array('RegNo','Name', 'Email', 'Country', 'Nationality', 'Current Position','Position Applying','Position Assigned','Experience','Schedule','Contract Currency','Seniority','Level Additional Comp','Seniority Range','Total Salary');
+			}
+			
 				$columns=	array_merge($columns,$questions);				
 
-			$callback = function() use($applicants, $columns) {
+			$callback = function() use($applicants, $columns,$event) {
 				$file = fopen('php://output', 'w');
 				fputcsv($file, $columns);
 
 				foreach ($applicants as $applicant) {
+					
 					$row['RegNo']  = $applicant->uev_id;
 					$row['Name']  = $applicant->name;
 					$row['Email']    = $applicant->email;
 					$row['Country']    = \App\Models\Country::find($applicant->country)->name;
 					$row['Nationality']    = \App\Models\Country::find($applicant->nationality)->name;
 					$row['Current Position']    = $applicant->position;
-					$row['Position Applying']    = \App\Models\Department::find($applicant->uev_dep_id)->name." - ".\App\Models\Posts::find($applicant->post_apply)->name;
-					$row['Position Assigned']    = \App\Models\Department::find($applicant->uev_dep_id)->name." - ".\App\Models\Posts::find($applicant->post_assigned)->name;
+					$postdetails=\App\Models\Posts::find($applicant->post_apply);
+					$row['Position Applying']    = \App\Models\Department::find($postdetails->dep_id)->name." - ";
+					$row['Position Applying'].= $postdetails->name;
+					if(!empty($postdetails->rank)){
+						$row['Position Applying'].= " - ".$postdetails->rank;
+					}
+					if(!empty($postdetails->rank_position)){
+						$row['Position Applying'].= " - ".$postdetails->rank_position;
+					}
+					$applicant_salary    = \App\Models\CompanySalarySystem::find($applicant->post_assigned);
+					$postdetails=\App\Models\Posts::find($applicant_salary->post_id);
+					$row['Position Assigned']    = \App\Models\Department::find($postdetails->dep_id)->name." - ";
+					$row['Position Assigned'] .= $postdetails->name;
+					if(!empty($postdetails->rank)){
+						$row['Position Assigned'].= " - ".$postdetails->rank;
+					}
+					if(!empty($postdetails->rank_position)){
+						$row['Position Assigned'].= " - ".$postdetails->rank_position;
+					}
+					
 					$row['Experience']    = getExperienceText($applicant->exp_years,$applicant->exp_months);
 					$schedule= \App\Models\EventSchedule::find($applicant->schedule);
 					$row['Schedule'] = "n/a";
@@ -970,23 +1015,30 @@ class EventController extends Controller
 						 }
 					  
 					
-					$applicant_salary =get_company_salaryBy_Id($applicant->salary_final); 
-					$row["Basic Wage"]=$applicant_salary->basic_wage;
-					$row["Other Contractual"]=$applicant_salary->other_contractual;
-					$row["Guaranteed Wage"]=$applicant_salary->guaranteed_wage;
-					$row["Service Charge"]=$applicant_salary->service_charge;
-					$row["Additional Bonus"]=$applicant_salary->additional_bonus;
-					$row["Bonus Level"]=$applicant_salary->bonus_level;
-					$row["Bonus Personam"]=$applicant_salary->bonus_personam;
-					$row["Total Salary"]=$applicant_salary->total_salary;
-					$row["Incentive Type"]=$applicant_salary->incentive_type;
-					$row["Contract Length"]=$applicant_salary->contract_length;
+					if($event->company_id==26){
+			
+					$row["Contract Length LOI"]=$applicant_salary->contract_length_loi;
+					$row["Total Salary"]=convertPriceToNumber($applicant_salary->total_salary);
+					$row["Min Eng"]=$applicant_salary->min_eng;
 					$row["Vacation Month"]=$applicant_salary->vacation_month;
+					$row["Start-up"]=$applicant_salary->start_up;
+					$row["First Reliever"]=$applicant_salary->first_reliever;
+					$detailsArr=array($row['RegNo'],$row['Name'],$row['Email'],$row['Country'],$row['Nationality'],$row['Current Position'],$row['Position Applying'],$row['Position Assigned'],$row['Experience'], $row['Schedule'], $row['Contract Length LOI'], $row['Total Salary'], $row['Min Eng'], $row['Vacation Month'], $row['Start-up'], $row['First Reliever']);			
+				
+					}else{
+					$row["Contract Currency"]=$applicant_salary->contract_currency;
+					$row["Seniority"]=$applicant_salary->seniority;
+					$row["Level Additional Comp"]=$applicant_salary->level_additional_comp;
+					$row["Seniority Range"]=$applicant_salary->seniority_range;
+					
+					$row["Total Salary"]=convertPriceToNumber($applicant_salary->total_salary);
+					$detailsArr=array($row['RegNo'],$row['Name'],$row['Email'],$row['Country'],$row['Nationality'],$row['Current Position'],$row['Position Applying'],$row['Position Assigned'],$row['Experience'], $row['Schedule'], $row['Contract Currency'], $row['Seniority'], $row['Level Additional Comp'], $row['Seniority Range'], $row['Total Salary']);
+
+					}
 					$answers=array();
 					foreach(unserialize($applicant->att_event_info) as $question){
 						$answers[]=$question['answer'];
 					}
-					$detailsArr=array($row['RegNo'],$row['Name'],$row['Email'],$row['Country'],$row['Nationality'],$row['Current Position'],$row['Position Assigned'],$row['Position Applying'],$row['Experience'], $row['Schedule'],$row["Basic Wage"],$row["Other Contractual"],$row["Guaranteed Wage"],$row["Service Charge"],$row["Additional Bonus"],$row["Bonus Level"],$row["Bonus Personam"],$row["Total Salary"],$row["Incentive Type"],$row["Contract Length"],$row["Vacation Month"],$row["status"]);
 					$detailsArr=array_merge($detailsArr,$answers);		
 					fputcsv($file,$detailsArr );
 				}
@@ -1017,62 +1069,87 @@ class EventController extends Controller
 		foreach(unserialize($event->interview_questions) as $question){
 			$questions[]=$question['question'];
 		}
-			$csvcolumns = array('RegNo','Name', 'Email', 'Country', 'Nationality', 'Current Position','Position Applying','Position Assigned','Experience','Schedule','Basic Wage','Other Contractual','Guaranteed Wage','Service Charge','Additional Bonus','Bonus Level','Bonus Personam','Total Salary','Incentive Type','Contract Length','Vacation Month','Interview Status');
+				
+		if($event->company_id==26){
+				$csvcolumns = array('RegNo','Name', 'Email', 'Country', 'Nationality', 'Current Position','Position Applying','Position Assigned','Experience','Schedule','Contract Length LOI','Total Salary','Min Eng','Vacation Month','Start-up','First Reliever');
+			}else{
+				
+				$csvcolumns = array('RegNo','Name', 'Email', 'Country', 'Nationality', 'Current Position','Position Applying','Position Assigned','Experience','Schedule','Contract Currency','Seniority','Level Additional Comp','Seniority Range','Total Salary');
+			}
 				$csvcolumns=	array_merge($csvcolumns,$questions);	
 				// Write the CSV header
 				fputcsv($csvFile, $csvcolumns);
 
 				// Write user data to the CSV file
 				foreach ($applicants as $applicant) {
-					$row['RegNo']  = $applicant->uev_id;
-					$row['Name']  = $applicant->name;
-					$row['Email']    = $applicant->email;
-					$row['Country']    = \App\Models\Country::find($applicant->country)->name;
-					$row['Nationality']    = \App\Models\Country::find($applicant->nationality)->name;
-					$row['Current Position']    = $applicant->position;
-					$row['Position Applying']    = \App\Models\Department::find($applicant->uev_dep_id)->name." - ".\App\Models\Posts::find($applicant->post_apply)->name;
-					$row['Position Assigned']    = \App\Models\Department::find($applicant->uev_dep_id)->name." - ".\App\Models\Posts::find($applicant->post_assigned)->name;
+					$row['RegNo']= $applicant->uev_id;
+					$row['Name']= $applicant->name;
+					$row['Email']= $applicant->email;
+					$row['Country']= \App\Models\Country::find($applicant->country)->name;
+					$row['Nationality']= \App\Models\Country::find($applicant->nationality)->name;
+					$row['Current Position']= $applicant->position;
+					$postdetails=\App\Models\Posts::find($applicant->post_apply);
+					$row['Position Applying']    = \App\Models\Department::find($postdetails->dep_id)->name." - ";
+					$row['Position Applying'].= $postdetails->name;
+					if(!empty($postdetails->rank)){
+						$row['Position Applying'].= " - ".$postdetails->rank;
+					}
+					if(!empty($postdetails->rank_position)){
+						$row['Position Applying'].= " - ".$postdetails->rank_position;
+					}
+					$applicant_salary    = \App\Models\CompanySalarySystem::find($applicant->post_assigned);
+					$postdetails=\App\Models\Posts::find($applicant_salary->post_id);
+					$row['Position Assigned']    = \App\Models\Department::find($postdetails->dep_id)->name." - ";
+					$row['Position Assigned'] .= $postdetails->name;
+					if(!empty($postdetails->rank)){
+						$row['Position Assigned'].= " - ".$postdetails->rank;
+					}
+					if(!empty($postdetails->rank_position)){
+						$row['Position Assigned'].= " - ".$postdetails->rank_position;
+					}
+					
 					$row['Experience']    = getExperienceText($applicant->exp_years,$applicant->exp_months);
 					$schedule= \App\Models\EventSchedule::find($applicant->schedule);
 					$row['Schedule'] = "n/a";
 					if(!empty($schedule)){
-					$row['Schedule'] =	date("d-m-Y h:i a" , strtotime($schedule->schedule)).", ".$schedule->location;
+						$row['Schedule'] =	date("d-m-Y h:i a" , strtotime($schedule->schedule)).", ".$schedule->location;
 					}
 					$row["status"]="";
-					
-					
-					   if($applicant->att_status=="3"){
-						  
-							$row["status"]="Selected";
-						 
-					   }else if($applicant->att_status=="2"){
-					  
-						 $row["status"]="Declined";
-						 }else if($applicant->att_status=="4"){
-					  
-							$row["status"]="Attending";
-						 }
+					if($applicant->att_status=="3"){
+						$row["status"]="Selected";
+					}else if($applicant->att_status=="2"){
+						$row["status"]="Declined";
+					}else if($applicant->att_status=="4"){
+						$row["status"]="Attending";
+					}
 					  
 					
-					$applicant_salary =get_company_salaryBy_Id($applicant->salary_final); 
-					$row["Basic Wage"]=$applicant_salary->basic_wage;
-					$row["Other Contractual"]=$applicant_salary->other_contractual;
-					$row["Guaranteed Wage"]=$applicant_salary->guaranteed_wage;
-					$row["Service Charge"]=$applicant_salary->service_charge;
-					$row["Additional Bonus"]=$applicant_salary->additional_bonus;
-					$row["Bonus Level"]=$applicant_salary->bonus_level;
-					$row["Bonus Personam"]=$applicant_salary->bonus_personam;
-					$row["Total Salary"]=$applicant_salary->total_salary;
-					$row["Incentive Type"]=$applicant_salary->incentive_type;
-					$row["Contract Length"]=$applicant_salary->contract_length;
+					if($event->company_id==26){
+			
+					$row["Contract Length LOI"]=$applicant_salary->contract_length_loi;
+					$row["Total Salary"]=convertPriceToNumber($applicant_salary->total_salary);
+					$row["Min Eng"]=$applicant_salary->min_eng;
 					$row["Vacation Month"]=$applicant_salary->vacation_month;
+					$row["Start-up"]=$applicant_salary->start_up;
+					$row["First Reliever"]=$applicant_salary->first_reliever;
+					$detailsArr=array($row['RegNo'],$row['Name'],$row['Email'],$row['Country'],$row['Nationality'],$row['Current Position'],$row['Position Applying'],$row['Position Assigned'],$row['Experience'], $row['Schedule'], $row['Contract Length LOI'], $row['Total Salary'], $row['Min Eng'], $row['Vacation Month'], $row['Start-up'], $row['First Reliever']);			
+				
+					}else{
+					$row["Contract Currency"]=$applicant_salary->contract_currency;
+					$row["Seniority"]=$applicant_salary->seniority;
+					$row["Level Additional Comp"]=$applicant_salary->level_additional_comp;
+					$row["Seniority Range"]=$applicant_salary->seniority_range;
+					
+					$row["Total Salary"]=convertPriceToNumber($applicant_salary->total_salary);
+					$detailsArr=array($row['RegNo'],$row['Name'],$row['Email'],$row['Country'],$row['Nationality'],$row['Current Position'],$row['Position Applying'],$row['Position Assigned'],$row['Experience'], $row['Schedule'], $row['Contract Currency'], $row['Seniority'], $row['Level Additional Comp'], $row['Seniority Range'], $row['Total Salary']);
+
+					}
 					$answers=array();
 					if(!empty($applicant->att_event_info)){
 						foreach(unserialize($applicant->att_event_info) as $question){
 							$answers[]=$question['answer'];
 						}
 					}
-					$detailsArr=array($row['RegNo'],$row['Name'],$row['Email'],$row['Country'],$row['Nationality'],$row['Current Position'],$row['Position Assigned'],$row['Position Applying'],$row['Experience'], $row['Schedule'],$row["Basic Wage"],$row["Other Contractual"],$row["Guaranteed Wage"],$row["Service Charge"],$row["Additional Bonus"],$row["Bonus Level"],$row["Bonus Personam"],$row["Total Salary"],$row["Incentive Type"],$row["Contract Length"],$row["Vacation Month"],$row["status"]);
 					$detailsArr=array_merge($detailsArr,$answers);		
 					fputcsv($csvFile,$detailsArr );
 				}
@@ -1365,9 +1442,11 @@ public function getPercentageProfile($user_bios){
     }	  
 	
 	public function applyEvent($data){
+		$event= Events::find($data->id);
+		$companySalarySystem = CompanySalarySystem::where("post_id",$data->post)->where("company_id",$event->company_id)->first();	
         $userevents =  new UserEvents;
 		$userevents->post_apply = $data->post;
-		$userevents->post_assigned = $data->post;
+		$userevents->post_assigned = $companySalarySystem->id;
 		$userevents->dep_id = Posts::find($data->post)->dep_id;
 		$userevents->salary_required = $data->salary_required;
 		$userevents->event_id = $data->id;
@@ -1383,7 +1462,6 @@ public function getPercentageProfile($user_bios){
 		$userevents->event_info = serialize($event_info); */
 		$userevents->status =1 ;
         if($userevents->save()){
-			$event= Events::find($data->id);
 			$details["subject"]="OceansMe Event Updates Notification";
 			$details["welcomeMesage"]="A candidate has applied this event.";	
 			$details["event"]=$event;
@@ -1463,10 +1541,8 @@ public function getPercentageProfile($user_bios){
 			return false;
 		}
 		
-	 $companySalarySystem = CompanySalarySystem::where('company_id', $event->company_id)->where('post_id', $data->post_assigned)->first();
 	  $userEvents = UserEvents::find($data->uev_id);
 		$userEvents->post_assigned = $data->post_assigned;
-		$userEvents->salary_final = isset($companySalarySystem->id)?$companySalarySystem->id:0;
 		if(!$userEvents->save()){
 			return false;
 		}
@@ -1592,16 +1668,7 @@ public function getPercentageProfile($user_bios){
 			}
     } 
 	
-	
-	 private function save__salaryUserEvent($data){
-		$userevents = UserEvents::find($data->id);
-		$userevents->salary_final =$data->salary ;
-        if($userevents->save()){
-            return true;
-        }else{
-            return false;
-        }
-    }
+
 	 private function change_statusEvent($data){
 		$userevents = UserEvents::find($data->id);
 		if(empty($userevents)){

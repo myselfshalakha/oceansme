@@ -31,7 +31,7 @@ class CityController extends Controller
     			break;
     		case 'list':
                 return view('components.common.cities.list', [
-                    'cities' => (isset($_GET['search']))?DB::table('cities')->where('name','like','%'.$_GET['search'].'%')->paginate(30)->withQueryString() :DB::table('cities')->paginate(30)
+                    'cities' => (isset($_GET['search']))?DB::table('cities')->where('name','like','%'.$_GET['search'].'%')->paginate(100)->withQueryString() :DB::table('cities')->paginate(100)
                 ]);
                 break;
             case 'delete':
@@ -52,7 +52,7 @@ class CityController extends Controller
                 break;
     		default:
     			return view('components.common.cities.list', [
-                    'cities' => (isset($_GET['search']))?DB::table('cities')->where('name','like','%'.$_GET['search'].'%')->paginate(30)->withQueryString() :DB::table('cities')->paginate(30)
+                    'cities' => (isset($_GET['search']))?DB::table('cities')->where('name','like','%'.$_GET['search'].'%')->paginate(100)->withQueryString() :DB::table('cities')->paginate(100)
                 ]);
                 break;
     	}

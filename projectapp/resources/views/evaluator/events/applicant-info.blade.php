@@ -5,6 +5,7 @@ $user_response_status=get_user_response_status();
   $applicant_salary =(isset($applicant->salary_final))?get_company_salaryBy_Id($applicant->salary_final):null; 
 
 ?>
+<div class="cstm_evaluator_admin_applicant cstm_evaluator_admin_applicant_info cstm_common_admin">
 <div class="row justify-content-center">
 		 <div class="col-12 grid-margin stretch-card">
 		   <div class="card">
@@ -26,39 +27,49 @@ $user_response_status=get_user_response_status();
                     </div>
                     <div class="col-md-6">
                       <address class="text-primary">
+						<div class="company_info">
                         <p class="fw-bold">
                           Event Name: 
                         </p>
                         <p class="mb-2">
 						{{ $event->name }} 
                         </p>
+						</div>
+						<div class="company_info">
 						<p class="fw-bold">
                           Company
                         </p>
                         <p class="mb-2">
 						{{ \App\Models\Company::find($event->company_id	)->name }} 
                         </p>
+						</div>
+						<div class="company_info">
 						<p class="fw-bold">
                           Start Date
                         </p>
                         <p class="mb-2">
 						{{ date('d M,Y',strtotime($event->start_date)) }}
                         </p>
+						</div>
+						<div class="company_info">
 						<p class="fw-bold">
                           End Date
                         </p>
                         <p class="mb-2">
 						{{ date('d M,Y',strtotime($event->end_date)) }}
                         </p>
+						</div>
                         @if(!empty($event->restrictedExperience))
+						<div class="company_info">
 						<p class="fw-bold">
                           Experience Required
                         </p>
                         <p class="mb-2">
 						{{ $event->restrictedExperience }} years of experience
                         </p>
+						</div>
 						@endif		
-						
+						<div class="company_info">
 						<p class="fw-bold">
                           Keys
                         </p>
@@ -69,13 +80,21 @@ $user_response_status=get_user_response_status();
 							if(!empty($event->post_id)){
 								$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
 								foreach($requiredPosts as $post){
-									$postname.= $post->name . ", ";
+									$postname.= $post->name;
+									if(!empty($post->rank)){
+										$postname.= " - ".$post->rank;
+									}
+									if(!empty($post->rank_position)){
+										$postname.= " - ".$post->rank_position;
+									}
+									$postname.= ", ";
 								}
 							}
 						$postname=rtrim($postname, ", ");
 						?>
 						{{$postname}}
                         </p>
+						</div>
                       </address>
                     </div>
                     <div class="col-md-12">
@@ -131,7 +150,7 @@ $user_response_status=get_user_response_status();
 										
 									 @endif
 									  <!-- Button trigger modal -->
-										<a href="javascript:void(0)" class="text-info" data-toggle="modal" data-target="#applicant_event_modal">Change Status</a>
+										</br> <a href="javascript:void(0)" class="text-info" data-toggle="modal" data-target="#applicant_event_modal">Change Status</a>
 										<a href="javascript:void(0)" class="text-info" data-toggle="modal" data-target="#applicant_email_modal">Send Notify</a>
 											
 
@@ -467,11 +486,17 @@ $user_response_status=get_user_response_status();
 									<div class="media-body">
 									  <p class="card-text">
 									 @if(!empty($applicant->post_apply))
-											@foreach($requiredPosts as $post)
-												 @if($applicant->post_apply==$post->id)
-													{{\App\Models\Department::find($applicant->uev_dep_id)->name}} - {{$post->name}}
-												@endif
-											@endforeach
+												 <?php
+													$postdetails=\App\Models\Posts::find($applicant->post_apply);
+													echo \App\Models\Department::find($postdetails->dep_id)->name." - ";
+													echo $postdetails->name;
+													if(!empty($postdetails->rank)){
+														echo " - ".$postdetails->rank;
+													}
+													if(!empty($postdetails->rank_position)){
+														echo " - ".$postdetails->rank_position;
+													}
+													?>
 										@else
 											n/a
 										@endif
@@ -488,12 +513,13 @@ $user_response_status=get_user_response_status();
 		
 
 		</div>
+</div>
 @endsection
 
 @section('footer')
 <!-- Modal for Notify Applicant -->
 <div class="modal fade" id="applicant_email_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_email_modalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog applicant_modal" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_email_modalLabel">Notify Applicant</h5>
@@ -521,7 +547,7 @@ $user_response_status=get_user_response_status();
 
 <!-- Modal for Change Status Appliccant -->
 <div class="modal fade" id="applicant_event_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_event_modalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog applicant_modal" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_event_modalLabel">Change event Status</h5>
@@ -560,7 +586,7 @@ $user_response_status=get_user_response_status();
 
 <!-- Modal for Resume Preview -->
 <div class="modal fade" id="applicant_resume_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_resume_modalLabel" aria-hidden="true">
-  <div class="modal-dialog  modal-lg" role="document">
+  <div class="modal-dialog applicant_modal  modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_resume_modalLabel">Resume Preview</h5>

@@ -26,6 +26,7 @@ if ($errorsArr) {
     }
 }
 ?>
+<div class="cstm_hr_admin_home cstm_common_admin">
  <div class="row dash-board-count-box">
         <div class="col-md-4 col-xl-3">
             <div class="card bg-c-blue order-card cmtab_dashboard_click" data-id="company_description">
@@ -59,12 +60,21 @@ if ($errorsArr) {
             </div>
         </div>
         <div class="col-md-4 col-xl-3">
-            <div class="card bg-c-pink order-card cmtab_dashboard_click" data-id="applicant_description">
+            <div class="card bg-c-green order-card cmtab_dashboard_click" data-id="applicant_description">
                 <div class="card-block">
-                    <h6 class="text-right"><i class="fa fa-user f-left"></i><span>Show Applicant</span></h6>
+                    <h6 class="text-right"><i class="fa fa-user f-left"></i><span>Show Attending Applicant</span></h6>
                 </div>
             </div>
         </div>
+		@if (isset($company->evaluate_by_company) && $company->evaluate_by_company=="yes")
+		<div class="col-md-4 col-xl-3">
+            <div class="card bg-c-blue order-card">
+                <div class="card-block">
+                    <h6 class="text-right"><a href="{{ route('admin.events',['param'=>'applicants']) }}?id={{$event->id}}"><i class="fa fa-user f-left"></i><span>Evaluate Applicant</span></a></h6>
+                </div>
+            </div>
+        </div>
+		@endif
 	</div>
 	
   <div class="row dash-board-count-box_description">
@@ -218,41 +228,51 @@ if ($errorsArr) {
 							</div>
 						<div class="col-md-6">
 						  <address class="text-primary">
-							<p class="fw-bold">
-							  Event Name: 
-							</p>
-							<p class="mb-2">
-							{{ $event->name }} 
-								<?php echo get_event_status_badge($event->status) ?>
-							
-							</p>
+							<div class="company_info">
+								<p class="fw-bold">
+								  Event Name: 
+								</p>
+								<p class="mb-2">
+								{{ $event->name }} 
+									<?php echo get_event_status_badge($event->status) ?>
+								
+								</p>
+							</div>
+							<div class="company_info">
 							<p class="fw-bold">
 							  Company
 							</p>
 							<p class="mb-2">
 							{{ \App\Models\Company::find($event->company_id	)->name }} 
 							</p>
+							</div>
+							<div class="company_info">
 							<p class="fw-bold">
 							  Start Date
 							</p>
 							<p class="mb-2">
 							{{ date('d M,Y',strtotime($event->start_date)) }}
 							</p>
+							</div>
+							<div class="company_info">
 							<p class="fw-bold">
 							  End Date
 							</p>
 							<p class="mb-2">
 							{{ date('d M,Y',strtotime($event->end_date)) }}
 							</p>
+							</div>
 							@if(!empty($event->restrictedExperience))
+							<div class="company_info">
 							<p class="fw-bold">
 							  Experience Required
 							</p>
 							<p class="mb-2">
 							{{ $event->restrictedExperience }} years of experience
 							</p>
+							</div>
 							@endif		
-							
+							<div class="company_info">
 							<p class="fw-bold">
 							  Keys
 							</p>
@@ -263,13 +283,21 @@ if ($errorsArr) {
 								if(!empty($event->post_id)){
 									$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
 									foreach($requiredPosts as $post){
-										$postname.= $post->name . ", ";
+										$postname.= $post->name;
+										if(!empty($post->rank)){
+											$postname.= " - ".$post->rank;
+										}
+										if(!empty($post->rank_position)){
+											$postname.= " - ".$post->rank_position;
+										}
+										$postname.= ", ";
 									}
 								}
 							$postname=rtrim($postname, ", ");
 							?>
 							{{$postname}}
 							</p>
+							</div>
 						  </address>
 						</div>
 						<div class="col-md-12">
@@ -682,12 +710,21 @@ if ($errorsArr) {
 
 												</td>
 												 <td>{{$applicant->att_status}}</td>
-												<td>{{ $applicant->name }} @if(isset($applicant->att_status))</br><span class="badge badge-info">{{$status[$applicant->att_status]}}</span> @endif</td>
+												<td>{{ $applicant->name }} @if(isset($applicant->att_status))<span class="badge badge-info">{{$status[$applicant->att_status]}}</span> @endif</td>
 												<td>{{ $applicant->email }}</td>
 												<td>{{\App\Models\Country::find($applicant->nationality)->name ?? "n/a"}}</td>
 
 												<td>{{ $applicant->position ?? 'n/a'}}</td>
-												<td>{{ \App\Models\Posts::find($applicant->post_apply)->name}}</td>
+												<td>
+												<?php $post= \App\Models\Posts::find($applicant->post_apply) ?>
+												{{ $post->name}}
+												@if(!empty($post->rank))
+													- {{$post->rank}}
+												@endif
+												@if(!empty($post->rank_position))
+													- {{$post->rank_position}}
+												@endif
+												</td>
 											
 												<td>{{ getExperienceText($applicant->exp_years,$applicant->exp_months) }}</td>
 												<td>
@@ -743,10 +780,11 @@ if ($errorsArr) {
 		
 	</div>
 @endsection
+</div>
 @section('footer')
 
 <div class="modal fade" id="applicant_resume_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_resume_modalLabel" aria-hidden="true">
-  <div class="modal-dialog  modal-lg" role="document">
+  <div class="modal-dialog applicant_modal  modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_resume_modalLabel">Resume Preview</h5>

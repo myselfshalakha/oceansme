@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRankfieldTable extends Migration
+class AddEvaluateAddonCompany extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class AddRankfieldTable extends Migration
      */
     public function up()
     {
-        Schema::table('posts', function (Blueprint $table) {
-            //
-		$table->text('rank_position')->after('name')->nullable();
-		$table->text('rank')->after('name')->nullable();
-
+        Schema::table('companies', function (Blueprint $table) {
+            $table->string('evaluate_by_company',30)->after('loi')->nullable();
         });
     }
 
@@ -28,7 +25,7 @@ class AddRankfieldTable extends Migration
      */
     public function down()
     {
-        Schema::table('posts', function (Blueprint $table) {
+        Schema::table('companies', function (Blueprint $table) {
             //
         });
     }

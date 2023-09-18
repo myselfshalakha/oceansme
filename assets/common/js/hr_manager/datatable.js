@@ -2,6 +2,7 @@ jQuery(document).ready(function() {
 
 	var applicant_list_table= jQuery(".applicant_list_table table").DataTable({
 		 "pageLength": 50,
+		// "scrollX": true,
 		 "aaSorting": [],
 		 "ordering": false,
 		 'lengthMenu': [

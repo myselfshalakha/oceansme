@@ -8,6 +8,7 @@
      toolbar: 'undo redo | blocks| bold italic | bullist numlist checklist | code | table'
    });
 </script>
+<div class="cstm_salary_sysytem cstm_common_admin">
 <div class="row justify-content-center">
 		 <div class="col-12 grid-margin stretch-card">
 		   <div class="card">
@@ -62,14 +63,22 @@
 												</div>
 											</div>	
 											<div class="row mb-3">
-												<label for="dep_id" class="col-md-4 col-form-label text-md-end">{{ __('Posts') }}</label>
+                                                <label for="post_id" class="col-md-4 col-form-label text-md-end">{{ __('Job Position / Job Title') }}</label>
 
 												<div class="col-md-6">
 												<select class="form-control post_options" name="post_id">
 												<option value="">Choose any one option</option>
 												@if(!empty($posts))
 														@foreach($posts as $post)
-															<option value="{{ $post->id }}" @if($company_salary_system->post_id == $post->id) selected @endif>{{$post->name}}</option>
+															<option value="{{ $post->id }}" @if($company_salary_system->post_id == $post->id) selected @endif>
+															{{$post->name}}
+															@if(!empty($post->rank))
+																- {{$post->rank}}
+															@endif
+															@if(!empty($post->rank_position))
+																- {{$post->rank_position}}
+															@endif
+															</option>
 														@endforeach
 													@endif
 												</select>
@@ -81,110 +90,16 @@
 													@enderror
 												</div>
 											</div>
-											<div class="row mb-3">
-												<label for="basic_wage" class="col-md-4 col-form-label text-md-end">{{ __('Basic Wage') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="basic_wage" type="text" class="form-control @error('basic_wage') is-invalid @enderror" name="basic_wage"  value="@if(isset($company_salary_system)){{ $company_salary_system->basic_wage }}@else{{ old('basic_wage') }}@endif" autocomplete="basic_wage" autofocus>
-
-													@error('basic_wage')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
-											<div class="row mb-3">
-												<label for="other_contractual" class="col-md-4 col-form-label text-md-end">{{ __('Other Contractual') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="other_contractual" type="text" class="form-control @error('other_contractual') is-invalid @enderror" name="other_contractual"  value="@if(isset($company_salary_system)){{ $company_salary_system->other_contractual }}@else{{ old('other_contractual') }}@endif"  autocomplete="other_contractual" autofocus>
-
-													@error('other_contractual')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
-											<div class="row mb-3">
-												<label for="guaranteed_wage" class="col-md-4 col-form-label text-md-end">{{ __('Guaranteed Wage') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="guaranteed_wage" type="text" class="form-control @error('guaranteed_wage') is-invalid @enderror" name="guaranteed_wage"   value="@if(isset($company_salary_system)){{ $company_salary_system->guaranteed_wage }}@else{{ old('guaranteed_wage') }}@endif"  autocomplete="guaranteed_wage" autofocus>
-
-													@error('guaranteed_wage')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
-											<div class="row mb-3">
-												<label for="service_charge" class="col-md-4 col-form-label text-md-end">{{ __('Service Charge') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="service_charge" type="text" class="form-control @error('service_charge') is-invalid @enderror" name="service_charge"   value="@if(isset($company_salary_system)){{ $company_salary_system->service_charge }}@else{{ old('service_charge') }}@endif"  autocomplete="service_charge" autofocus>
-
-													@error('service_charge')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
-											<div class="row mb-3">
-												<label for="additional_bonus" class="col-md-4 col-form-label text-md-end">{{ __('Additional Bonus') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="additional_bonus" type="text" class="form-control @error('additional_bonus') is-invalid @enderror" name="additional_bonus"   value="@if(isset($company_salary_system)){{ $company_salary_system->additional_bonus }}@else{{ old('additional_bonus') }}@endif"  autocomplete="additional_bonus" autofocus>
-
-													@error('additional_bonus')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
-											<div class="row mb-3">
-												<label for="bonus_level" class="col-md-4 col-form-label text-md-end">{{ __('Bonus Level') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="bonus_level" type="text" class="form-control @error('bonus_level') is-invalid @enderror" name="bonus_level"   value="@if(isset($company_salary_system)){{ $company_salary_system->bonus_level }}@else{{ old('bonus_level') }}@endif"   autocomplete="bonus_level" autofocus>
-
-													@error('bonus_level')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
-											<div class="row mb-3">
-												<label for="bonus_personam" class="col-md-4 col-form-label text-md-end">{{ __('Bonus Personam') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="bonus_personam" type="text" class="form-control @error('bonus_personam') is-invalid @enderror" name="bonus_personam"   value="@if(isset($company_salary_system)){{ $company_salary_system->bonus_personam }}@else{{ old('bonus_personam') }}@endif"   autocomplete="bonus_personam" autofocus>
-
-													@error('bonus_personam')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
+											
+											
+											
+											
 											<div class="row mb-3">
 												<label for="total_salary" class="col-md-4 col-form-label text-md-end">{{ __('Total Salary') }}</label>
 
 												<div class="col-md-6">
 												
-												<input id="total_salary" type="text" class="form-control @error('total_salary') is-invalid @enderror" name="total_salary"   value="@if(isset($company_salary_system)){{ $company_salary_system->total_salary }}@else{{ old('total_salary') }}@endif"   autocomplete="total_salary" autofocus>
+												<input id="total_salary" type="text" class="form-control @error('total_salary') is-invalid @enderror" name="total_salary"   value="@if(isset($company_salary_system)){{ $company_salary_system->total_salary }}@else{{ old('total_salary') }}@endif"   placeholder="1000.00"   autocomplete="total_salary" autofocus>
 
 													@error('total_salary')
 														<span class="invalid-feedback" role="alert">
@@ -194,20 +109,18 @@
 												</div>
 											</div>
 											<div class="row mb-3">
-												<label for="incentive_type" class="col-md-4 col-form-label text-md-end">{{ __('Incentive Type') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="incentive_type" type="text" class="form-control @error('incentive_type') is-invalid @enderror" name="incentive_type"   value="@if(isset($company_salary_system)){{ $company_salary_system->incentive_type }}@else{{ old('incentive_type') }}@endif"   autocomplete="incentive_type" autofocus>
-
-													@error('incentive_type')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
-											<div class="row mb-3">
+                                                <label for="min_eng" class="col-md-4 col-form-label text-md-end">{{ __('Min_eng') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="min_eng" type="text" class="form-control @error('min_eng') is-invalid @enderror" name="min_eng" value="@if(isset($company_salary_system)){{ $company_salary_system->min_eng }}@else{{ old('min_eng') }}@endif"  autocomplete="min_eng" autofocus>
+                                                   @error('min_eng')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+                                              
+                                             <div class="row mb-3">
 												<label for="contract_length" class="col-md-4 col-form-label text-md-end">{{ __('Contract Length') }}</label>
 
 												<div class="col-md-6">
@@ -221,7 +134,18 @@
 													@enderror
 												</div>
 											</div>
-											<div class="row mb-3">
+                                             <div class="row mb-3">
+                                                <label for="contract_length_loi" class="col-md-4 col-form-label text-md-end">{{ __('Contract Length (LOI)') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="contract_length_loi" type="text" class="form-control @error('contract_length_loi') is-invalid @enderror" name="contract_length_loi" value="@if(isset($company_salary_system)){{ $company_salary_system->contract_length_loi }}@else{{ old('contract_length_loi') }}@endif"  autocomplete="contract_length_loi" autofocus>
+                                                   @error('contract_length_loi')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+                                              <div class="row mb-3">
 												<label for="vacation_month" class="col-md-4 col-form-label text-md-end">{{ __('Vacation Month') }}</label>
 
 												<div class="col-md-6">
@@ -235,20 +159,78 @@
 													@enderror
 												</div>
 											</div>
-											<div class="row mb-3">
-												<label for="status" class="col-md-4 col-form-label text-md-end">{{ __('Status') }}</label>
-
-												<div class="col-md-6">
-												
-												<input id="status" type="text" class="form-control @error('status') is-invalid @enderror" name="status"   value="@if(isset($company_salary_system)){{ $company_salary_system->status }}@else{{ old('status') }}@endif"   autocomplete="status" autofocus>
-
-													@error('status')
-														<span class="invalid-feedback" role="alert">
-															<strong>{{ $message }}</strong>
-														</span>
-													@enderror
-												</div>
-											</div>
+                                             
+											 
+                                            <div class="row mb-3">
+                                                <label for="start_up" class="col-md-4 col-form-label text-md-end">{{ __('Start-up') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="start_up" type="text" class="form-control @error('start_up') is-invalid @enderror" name="start_up" value="@if(isset($company_salary_system)){{ $company_salary_system->start_up }}@else{{ old('start_up') }}@endif"  autocomplete="start_up" autofocus>
+                                                   @error('start_up')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+                                             <div class="row mb-3">
+                                                <label for="first_reliever" class="col-md-4 col-form-label text-md-end">{{ __('First Reliever') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="first_reliever" type="text" class="form-control @error('first_reliever') is-invalid @enderror" name="first_reliever" value="@if(isset($company_salary_system)){{ $company_salary_system->first_reliever }}@else{{ old('first_reliever') }}@endif"  autocomplete="first_reliever" autofocus>
+                                                   @error('first_reliever')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+											 <div class="row mb-3">
+                                                <label for="contract_currency" class="col-md-4 col-form-label text-md-end">{{ __('Contract Currency') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="contract_currency" type="text" class="form-control @error('contract_currency') is-invalid @enderror" name="contract_currency" value="@if(isset($company_salary_system)){{ $company_salary_system->contract_currency }}@else{{ old('contract_currency') }}@endif"  autocomplete="contract_currency" autofocus>
+                                                   @error('contract_currency')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+                                             <div class="row mb-3">
+                                                <label for="seniority" class="col-md-4 col-form-label text-md-end">{{ __('Seniority') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="seniority" type="text" class="form-control @error('seniority') is-invalid @enderror" name="seniority" value="@if(isset($company_salary_system)){{ $company_salary_system->seniority }}@else{{ old('seniority') }}@endif"  autocomplete="seniority" autofocus>
+                                                   @error('seniority')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+                                           <div class="row mb-3">
+                                                <label for="level_additional_comp" class="col-md-4 col-form-label text-md-end">{{ __('Level of Additional Comp') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="level_additional_comp" type="text" class="form-control @error('level_additional_comp') is-invalid @enderror" name="level_additional_comp" value="@if(isset($company_salary_system)){{ $company_salary_system->level_additional_comp }}@else{{ old('level_additional_comp') }}@endif"  autocomplete="level_additional_comp" autofocus>
+                                                   @error('level_additional_comp')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+                                           <div class="row mb-3">
+                                                <label for="seniority_range" class="col-md-4 col-form-label text-md-end">{{ __('Seniority Range') }}</label>
+                                                <div class="col-md-6">
+                                                   <input id="seniority_range" type="text" class="form-control @error('seniority_range') is-invalid @enderror" name="seniority_range" value="@if(isset($company_salary_system)){{ $company_salary_system->seniority_range }}@else{{ old('seniority_range') }}@endif"  autocomplete="seniority_range" autofocus>
+                                                   @error('seniority_range')
+                                                   <span class="invalid-feedback" role="alert">
+                                                   <strong>{{ $message }}</strong>
+                                                   </span>
+                                                   @enderror
+                                                </div>
+                                             </div>
+                                          
+											
+											
+											
 											<div class="row mb-0 submit_btn_row">
 												<div class="col-md-12 d-flex">
 													<button type="submit" class="btn btn-primary">
@@ -268,3 +250,4 @@
 		</div>
 	</div>
 @endsection
+</div>

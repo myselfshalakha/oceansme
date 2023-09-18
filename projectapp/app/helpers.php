@@ -302,45 +302,84 @@ if (!function_exists('make_table_with_salary_info'))
 		if($item!=null){
 			$content="";
 			ob_start();
-			?>
-			<div class="table-responsive">
-					<table class="table table-striped">
-					  <thead>
-						<tr>
-						<th>Basic Wage</th>
-						<th>Other Contractual</th>
-						<th>Guaranteed Wage</th>
-						<th>Service Charge</th>
-						<th>Additional Bonus</th>
-						<th>Bonus Level</th>
-						<th>Bonus Personam</th>
-						<th>Total Salary</th>
-						<th>Incentive Type</th>
-						<th>Contract Length</th>
-						<th>Vacation Month</th>
-						</tr>
-					  </thead>
-					  <tbody>
-							<tr>
-								<td><?php echo $item->basic_wage ?></td>
-								<td><?php echo $item->other_contractual ?></td>
-								<td><?php echo $item->guaranteed_wage ?></td>
-								<td><?php echo $item->service_charge ?></td>
-								<td><?php echo $item->additional_bonus ?></td>
-								<td><?php echo $item->bonus_level ?></td>
-								<td><?php echo $item->bonus_personam ?></td>
-								<td><?php echo $item->total_salary ?></td>
-								<td><?php echo $item->incentive_type ?></td>
-								<td><?php echo $item->contract_length ?></td>
-								<td><?php echo $item->vacation_month ?></td>
-							</tr>
-					  </tbody>
-					</table>
-					
-			  </div>
-										  
-			  
-			<?php
+		if($item->company_id==26){
+						?>				
+						
+                                    <div class="table-responsive">
+                                       <table class="table table-striped company_salary_list">
+                                          <thead>
+                                             <tr>
+                                                <th>Department</th>
+                                                <th>Job Title</th>
+                                                <th>Position Code</th>
+                                                <th>Contract Length LOI</th>
+                                                <th>Total Salary</th>
+                                                <th>Min Eng</th>
+                                                <th>Contract Length</th>
+                                                <th>Vacation Month</th>
+                                                <th>Start-up</th>
+                                                <th>First Reliever</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                           
+                                             <tr>
+                                                <td><?php echo \App\Models\Department::find($item->dep_id)->name ?></td>
+												<?php $postInfo=\App\Models\Posts::find($item->post_id);  ?>
+                                                <td><?php echo $postInfo->name ?></td>
+                                                <td><?php echo $postInfo->rank ?></td>
+                                               
+                                                <td><?php echo $item->contract_length_loi ?></td>
+                                                <td><?php echo convertPriceToNumber($item->total_salary) ?></td>
+                                                <td><?php echo $item->min_eng ?></td>
+                                                <td><?php echo $item->contract_length ?></td>
+                                                <td><?php echo $item->vacation_month ?></td>
+                                                <td><?php echo $item->start_up	 ?></td>
+                                                <td><?php echo $item->first_reliever ?></td>
+                                               
+                                             </tr>
+                                            
+                                          </tbody>
+                                       </table>
+                                    </div>
+                                   		<?php }else{ ?>
+
+								
+									<div class="table-responsive">
+                                       <table class="table table-striped company_salary_list">
+                                          <thead>
+                                             <tr>
+                                                <th>Department</th>
+                                                <th>Posts</th>
+                                                <th>Rank</th>
+                                                <th>Rank Position</th>
+                                                <th>Contract Currency</th>
+                                                <th>Seniority</th>
+                                                <th>Level Additional Comp</th>
+                                                <th>Seniority Range</th>
+                                                <th>Total Salary</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             <tr>
+                                                <td><?php echo \App\Models\Department::find($item->dep_id)->name ?></td>
+												<?php $postInfo=\App\Models\Posts::find($item->post_id);  ?>
+                                                <td><?php echo $postInfo->name ?></td>
+                                                <td><?php echo $postInfo->rank ?></td>
+                                                <td><?php echo $postInfo->rank_position ?></td>
+                                              
+                                                <td><?php echo $item->contract_currency ?></td>
+                                                <td><?php echo $item->seniority ?></td>
+                                                <td><?php echo $item->level_additional_comp ?></td>
+                                                <td><?php echo $item->seniority_range ?></td>
+                                                <td><?php echo convertPriceToNumber($item->total_salary) ?></td>
+                                                
+                                             </tr>
+                                           
+                                          </tbody>
+                                       </table>
+                                    </div>
+		<?php } 
 			$content = ob_get_contents();
 			ob_end_clean();
 			
@@ -356,7 +395,7 @@ if (!function_exists('get_company_loi_html'))
     function get_company_loi_html($event=null,$company=null,$companySalaryInfo=null,$user=null)
     {
 		if($event!=null && $company!=null && $companySalaryInfo!=null && $user!=null){
-			$post=Posts::find($event->post_assigned);
+			$post=Posts::find($companySalaryInfo->post_id);
 			$department=Department::find($post->dep_id);
 			//Header LOI
 			$headerContent="";
@@ -512,6 +551,26 @@ if (!function_exists('getAgenciesUsers'))
 	
     }
 }
+if (!function_exists('convertPriceToNumber'))
+{
+	function convertPriceToNumber($value) {
+		 if (is_numeric($value)) {
+			// If the value is already numeric, return it as is, rounded to 2 decimal places
+			return number_format((float) $value, 2);
+		} elseif (is_string($value)) {
+			// If the value is a string, remove commas and convert to a float
+			$newvalue = str_replace(',', '', $value);
+			$floatValue = floatval($newvalue);
+
+			// Use number_format to round to 2 decimal places
+			return number_format($floatValue, 2, '.', '');
+		} else {
+			// Return 0.00 for other types of values
+			return '0.00';
+		}
+	}
+}
+
 
 
 

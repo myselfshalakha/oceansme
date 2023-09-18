@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content') 
-<div class="row justify-content-center">
+<div class="cstm_events_admin_createadd cstm_common_admin">
+	<div class="row justify-content-center">
      
 		 <div class="col-12 grid-margin stretch-card">
 		   <div class="card">
@@ -313,6 +314,7 @@
 		@endif
 		
 	</div>
+</div>
 @endsection
 
 @section('footer')

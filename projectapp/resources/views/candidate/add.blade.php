@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('content')
+<div class="cstm_candidate_admin_add cstm_common_admin">
    <div class="row justify-content-center">
      
         <div class="col-12 grid-margin stretch-card">
@@ -142,5 +143,6 @@
                 </div>
             </div>
         </div>
-    </div>                
+    </div> 
+</div>	
 @endsection

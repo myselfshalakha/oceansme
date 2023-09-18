@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('content') 
-<div class="row justify-content-center">
+<div class="cstm_companies_admin_list cstm_common_admin">
+	<div class="row justify-content-center">
      
 		<div class="col-lg-12 grid-margin stretch-card table_record_list">
             <div class="card">
@@ -78,4 +79,5 @@
 			</div>
 		</div>
 	</div>
+</div>
 @endsection

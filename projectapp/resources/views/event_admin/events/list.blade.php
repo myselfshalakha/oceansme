@@ -36,7 +36,7 @@
                                     			<th>Company</th>
                                     			<th>Event Admin</th>
                                     			<th>Evaluator</th>
-                                    			<th>Post</th>
+                                    			<th>Postitions</th>
                                     			<th>Actions</th>
                                     		</thead>
                                     		<tbody>
@@ -64,8 +64,16 @@
 															<?php
 																$postname="";
 																if(!empty($event->post_id)){
-																	foreach(unserialize($event->post_id) as $post_id){
-																		$postname.= \App\Models\Posts::find($post_id)->name . ", ";
+																	$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
+																	foreach($requiredPosts as $post){
+																		$postname.= $post->name;
+																		if(!empty($post->rank)){
+																			$postname.= " - ".$post->rank;
+																		}
+																		if(!empty($post->rank_position)){
+																			$postname.= " - ".$post->rank_position;
+																		}
+																		$postname.= ", ";
 																	}
 																}
 															$postname=rtrim($postname, ", ");

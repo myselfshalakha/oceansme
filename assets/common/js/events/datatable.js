@@ -1,8 +1,9 @@
 jQuery(document).ready(function() {
 
-	var applicant_list_table= jQuery(".applicant_list_table table").DataTable({
+	var applicant_list_table= jQuery(".applicant_list_table .select-table").DataTable({
 		 "pageLength": 50,
 		 "aaSorting": [],
+		  "scrollX": true,
 		 "ordering": false,
 		 'lengthMenu': [
              [1,5, 25, 50, 100, 200, 500, -1],

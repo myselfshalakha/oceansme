@@ -1,15 +1,13 @@
 @extends('layouts.app')
 @section('content')
+<div class="cstm_evaluator_admin_add cstm_common_admin">
    <div class="row justify-content-center">
       <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
                   <div class="template-demo">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-primary">Evaluator Settings</button>
-                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        
-                      </button>
+                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Event Admin Settings</button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuSplitButton1">
                         <a class="dropdown-item" href="{{ route('admin.users') }}/evaluator/add">Add</a>
                         <a class="dropdown-item" href="{{ route('admin.users') }}/evaluator/">List</a>
@@ -178,5 +176,6 @@
                 </div>
             </div>
         </div>
-    </div>                
+    </div>  
+</div>	
 @endsection

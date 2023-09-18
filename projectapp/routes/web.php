@@ -84,7 +84,20 @@ Route::get('/view-clear', function() {
 Route::get('run__queue', function () {
 
     \Artisan::call('queue:work --once');
+    \Artisan::call('queue:work --once');
+    \Artisan::call('queue:work --once');
+    \Artisan::call('queue:work --once');
+    \Artisan::call('queue:work --once');
 
     dd("Queue work");
+
+});
+
+
+Route::get('run__migrations', function () {
+
+    Artisan::call('migrate');
+
+    dd("Migration work");
 
 });

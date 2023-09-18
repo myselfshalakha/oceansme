@@ -1,16 +1,14 @@
 @extends('layouts.app')
 
 @section('content') 
-<div class="row justify-content-center">
+<div class="cstm_post_admin_createlists cstm_common_admin">
+	<div class="row justify-content-center">
      <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
                   <div class="template-demo">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-primary">Posts Settings</button>
-                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        
-                      </button>
+                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Posts Settings</button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuSplitButton1">
                         <a class="dropdown-item" href="{{ route('admin.post') }}/add">Add</a>
                         <a class="dropdown-item" href="{{ route('admin.post') }}">List</a>
@@ -30,8 +28,9 @@
                                 	<div class="table-responsive">
                                     	<table class="table table-striped">
                                     		<thead>
-                                    			<th>Name</th>
+                                    			<th>Job Position / Job Title</th>
                                     			<th>Rank</th>
+                                    			<th>Rank Position</th>
                                     			<th>Department</th>
                                     			<th>Actions</th>
                                     		</thead>
@@ -41,6 +40,7 @@
                                     					<tr>
                                     						<td>{{ $post->name }}</td>
                                     						<td>{{ $post->rank }}</td>
+                                    						<td>{{ $post->rank_position }}</td>
                                     						<td>{{ $post->depname }}</td>
                                     						
                                     						<td class="td-action-icons"> 
@@ -65,4 +65,5 @@
 			</div>
 		</div>
 	</div>
+</div>
 @endsection

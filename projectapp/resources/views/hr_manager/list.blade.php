@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content')
-  <div class="row">
+<div class="cstm_hrmanager_admin cstm_common_admin">
+	<div class="row">
    
          
 		<div class="col-lg-12 grid-margin stretch-card table_record_list">
@@ -48,5 +49,6 @@
                 </div>
               </div>
             </div>          
-      </div>                       
+     </div>  
+</div>	 
 @endsection

@@ -1,30 +1,8 @@
 @extends('layouts.app')
 @section('content') 
-<div class="">
-	<div class="row justify-content-center">
-                        <div class="col-md-12">
-                           <form class="card card-sm" action="{{ route('admin.events') }}/search_applicant" method="get">
-									  {{csrf_field()}}
-
-                                <div class="card-body row no-gutters align-items-center">
-                               
-                                    <!--end of col-->
-                                    <div class="col-10">
-										 <input type="text" class="form-control form-control-lg" name="id" placeholder="Enter the Regid" value="{{ $_GET['id'] ?? '' }}" required>
-                                    </div>
-                                    <!--end of col-->
-                                    <div class="col-2">
-										<button type="submit" class="btn btn-primary me-2">Search</button>
-                                    </div>
-                                    <!--end of col-->
-                                </div>
-                            </form>
-                        </div>
-                        <!--end of col-->
-                    </div>
-<div class="row justify-content-center">
 <?php
 $user_response_status=get_user_response_status(2);
+  $applicant_salary =get_company_salaryBy_Id($applicant->post_assigned);
 	$postname="";
 	$requiredPosts=array();
 	if(!empty($event->post_id)){
@@ -34,9 +12,99 @@ $user_response_status=get_user_response_status(2);
 		}
 	}
 	$postname=rtrim($postname, ", ");
-	 
-	?>
+	   
+?>
+<div class="row justify-content-center">
+		 <div class="col-12 grid-margin stretch-card">
+		   <div class="card">
+                <div class="card-header">Applicant Details</div>
 
+                <div class="card-body">
+				  <div class="row event_info">
+                    <div class="col-md-6">
+                      <div class="card-description featured_image">
+						  @if(isset($event) && !empty($event->featured_image))
+						<img src="{{ url('/') }}/assets/images/events/{{$event->featured_image}}"> 
+						@else
+						<img src="{{ asset('/assets/images/frontpage/explora_gold_logo.png') }}">
+						@endif
+					  </div>
+                    </div>
+                    <div class="col-md-6">
+                      <address class="text-primary">
+                        <p class="fw-bold">
+                          Event Name: 
+                        </p>
+                        <p class="mb-2">
+						{{ $event->name }} 
+                        </p>
+						<p class="fw-bold">
+                          Company
+                        </p>
+                        <p class="mb-2">
+						{{ \App\Models\Company::find($event->company_id	)->name }} 
+                        </p>
+						<p class="fw-bold">
+                          Start Date
+                        </p>
+                        <p class="mb-2">
+						{{ date('d M,Y',strtotime($event->start_date)) }}
+                        </p>
+						<p class="fw-bold">
+                          End Date
+                        </p>
+                        <p class="mb-2">
+						{{ date('d M,Y',strtotime($event->end_date)) }}
+                        </p>
+                        @if(!empty($event->restrictedExperience))
+						<p class="fw-bold">
+                          Experience Required
+                        </p>
+                        <p class="mb-2">
+						{{ $event->restrictedExperience }} years of experience
+                        </p>
+						@endif		
+						
+						<p class="fw-bold">
+                          Keys
+                        </p>
+                        <p>
+						<?php
+							$postname="";
+							$requiredPosts=array();
+							if(!empty($event->post_id)){
+								$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
+								foreach($requiredPosts as $post){
+									$postname.= $post->name;
+									if(!empty($post->rank)){
+										$postname.= " - ".$post->rank;
+									}
+									if(!empty($post->rank_position)){
+										$postname.= " - ".$post->rank_position;
+									}
+									$postname.= ", ";
+								}
+							}
+						$postname=rtrim($postname, ", ");
+						?>
+						{{$postname ?? "n/a"}}
+                        </p>
+                      </address>
+                    </div>
+                    <div class="col-md-12">
+					 <div class="card-body">
+					  <h4 class="card-title">Description</h4>
+					  <div class="card-description">
+						@if(isset($event)) {{$event->description ?? "n/a"}} @endif
+					  </div>
+					  
+					</div>
+					</div>
+                  </div>
+             		
+				</div>
+			</div>
+		</div>
 		<div class="col-12 grid-margin stretch-card">
 			<div class="card">
 			<div class="card-header">Basic Details</div>
@@ -320,12 +388,14 @@ $user_response_status=get_user_response_status(2);
 														@foreach($requiredPosts as $post)
 															 @if($applicant->post_apply==$post->id)
 															 {{\App\Models\Department::find($post->dep_id)->name ?? ''}} - {{$post->name}}
-																@if(!empty($post->rank))
-																	- {{$post->rank}}
-																@endif
-																@if(!empty($post->rank_position))
-																	- {{$post->rank_position}}
-																@endif
+															<?php
+															if(!empty($post->rank)){
+																echo " - ".$post->rank;
+															}
+															if(!empty($post->rank_position)){
+																echo " - ".$post->rank_position;
+															}
+															?>
 															@endif
 														@endforeach
 													@else
@@ -548,15 +618,80 @@ $user_response_status=get_user_response_status(2);
 	
 	</div>
 @endsection
-</div>
 
 @section('footer')
+<!-- Modal for Notify Applicant -->
+<div class="modal fade" id="applicant_email_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_email_modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="applicant_email_modalLabel">Notify Applicant</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		<form id="applicantnotifyform">
+		  <div class="form-group">
+			<label for="Message">Message</label>
+			<textarea class="form-control notify_message" name="notify_message" ></textarea>
+		  </div>
+		  <div class="form-group">
+			<label for="Message">LOI Attachment</label>
+			<input type="file" class="form-control notify_attach" name="notify_attach" />
+		  </div> 
+		  <div class="form-group">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-primary" data-id="{{$applicant->uev_id}}" data-action="{{route('admin.events',['param'=>'send_applicant_notify'])}}"  id="send_applicant_notify">Send Notify</button>
+		  </div>
+		</form>
+      </div>
+     
+    </div>
+  </div>
+</div>
 
 
-
+<?php
+/*
+<!-- Modal for Change Status Appliccant -->
+<div class="modal fade" id="applicant_event_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_event_modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="applicant_event_modalLabel">Change event Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+		<form id="changeapplicantstatus">
+		  <div class="form-group">
+			<label for="Status">Status</label>
+			<select class="form-control applicanteventStatus">
+			  	<?php
+					$status=get_user_attending_status();
+				?>
+				@foreach($status as $k=>$v)
+					<option value="{{$k}}" @if( $applicant->att_status==$k) selected @endif>{{$v}}</option>
+				@endforeach
+			</select>
+		  </div> 
+		  <div class="form-group">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-primary" data-id="{{$applicant->uevatt_id}}" data-action="{{route('admin.events',['param'=>'change_attending_status'])}}"  id="save__attending_status">Save</button>
+		  </div>
+		</form>
+      </div>
+     
+    </div>
+  </div>
+</div>
+*/
+?>
 <!-- Modal for Resume Preview -->
 <div class="modal fade" id="applicant_resume_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_resume_modalLabel" aria-hidden="true">
-  <div class="modal-dialog applicant_modal  modal-lg" role="document">
+  <div class="modal-dialog  modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_resume_modalLabel">Resume Preview</h5>
@@ -565,36 +700,41 @@ $user_response_status=get_user_response_status(2);
         </button>
       </div>
       <div class="modal-body">
-	  <div id="file-preview"></div>
-
       </div>
      
     </div>
   </div>
 </div>
-@if($applicant->att_status!=9)
-<script>
 
-function page_locked_for_others(){
-	var req_url="{{route('admin.events',['param'=>'page_locked'])}}";
-	var id="{{$_GET['id']}}";
-	jQuery.ajax({
-			method:'POST',  
-			url : req_url,
-			data : {id:id},
-			dataType: 'JSON',
-			success: function(data){
-				
-			}   
-		});
-}
-jQuery(document).ready(function(){
-	page_locked_for_others();
-	setInterval(function(){
-		page_locked_for_others();
-	},5000);
-});
+<?php
+/*
+<!-- Modal for Questions Preview -->
+<div class="modal fade" id="applicant_questions_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_questions_modalLabel" aria-hidden="true">
+  <div class="modal-dialog  modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="applicant_questions_modalLabel">Questions</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	   @if(!empty($applicant->post_apply))
+			@foreach($requiredPosts as $post)
+				 @if($applicant->post_apply==$post->id)
+					<iframe  src="https://docs.google.com/viewer?embedded=true&url={{ url('/') }}/assets/files/posts/{{$post->questions ?? 'sample.pdf'}}"  id="question_preview_area" class="question_preview_area" height="600" width="100%">
+				@endif
+			@endforeach
+		@else
+			n/a
+		@endif
+      </div>
+     
+    </div>
+  </div>
+</div>
 
-</script>
-@endif
+*/
+
+?>
 @endsection

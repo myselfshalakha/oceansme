@@ -182,7 +182,15 @@
 											<option value="">Choose any one option</option>
 											@if(!empty($requiredPosts))
 												@foreach($requiredPosts as $post)
-													<option  value="{{ $post->id }}">{{$post->name}}</option>
+													<option  value="{{ $post->id }}">
+													{{$post->name}}
+													@if(!empty($post->rank))
+														- {{$post->rank}}
+													@endif
+													@if(!empty($post->rank_position))
+														- {{$post->rank_position}}
+													@endif
+													</option>
 												@endforeach
 											@endif
 									</select>

@@ -1,15 +1,13 @@
 @extends('layouts.app')
 @section('content')
-  <div class="row test">
+<div class="cstm_event_admin cstm_common_admin">
+  <div class="row">
     <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
                   <div class="template-demo">
                     <div class="btn-group">
-                      <button type="button" class="btn btn-primary">Event Admin Settings</button>
-                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        
-                      </button>
+                      <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" id="dropdownMenuSplitButton1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Event Admin Settings</button>
                       <div class="dropdown-menu" aria-labelledby="dropdownMenuSplitButton1">
                         <a class="dropdown-item" href="{{ route('admin.users') }}/event_admin/add">Add</a>
                         <a class="dropdown-item" href="{{ route('admin.users') }}/event_admin/">List</a>
@@ -65,5 +63,6 @@
                 </div>
               </div>
             </div>          
-      </div>                       
+      </div>  
+</div>	  
 @endsection

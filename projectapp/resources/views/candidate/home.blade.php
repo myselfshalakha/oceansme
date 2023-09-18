@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="cstm_candidate_admin_home cstm_common_admin">
 		  <div class="row">
 				<div class="col-md-12">
 					  @if(session()->has('success'))
@@ -109,8 +110,18 @@
 									 <?php
 										$postname="";
 										if(!empty($event->post_id)){
-											foreach(unserialize($event->post_id) as $post_id){
-												$postname.= \App\Models\Posts::find($post_id)->name . ", ";
+																		
+											$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
+
+											foreach($requiredPosts as $post){
+												$postname.= $post->name;
+											if(!empty($post->rank)){
+												$postname.= " - ".$post->rank;
+											}
+											if(!empty($post->rank_position)){
+												$postname.= " - ".$post->rank_position;
+											}
+											$postname.= ", ";
 											}
 										}
 									$postname=rtrim($postname, ", ");
@@ -129,5 +140,6 @@
 				   </div>
 				   </div>
 			   </div>
+</div>
 	@endif
 @endsection

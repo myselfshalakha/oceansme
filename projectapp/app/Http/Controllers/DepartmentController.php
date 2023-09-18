@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Department;
+use App\Models\Posts;
 use Illuminate\Support\Facades\DB;
 
 class DepartmentController extends Controller
@@ -80,9 +81,7 @@ class DepartmentController extends Controller
 
     private function deleteDepartment($id){
         try{
-			if(DB::table('posts')->where('dep_id',$id)->exists()){
-                return 'Department associcated with many posts. Cannot delete it directly.';
-            }
+			Posts::where('dep_id', $id)->delete();
             if(Department::where('id', $id)->delete()){
                 return true;
             }else{

@@ -33,18 +33,7 @@ class AdminController extends Controller
 			 $eventList = DB::table('events')->where('eventadmin_id', '=', Auth::user()->id)->get();
 			return view('event_admin.home', compact('events','eventList'));
 		} else if(Auth::user()->hasRole('interviewer')){
-			 /* $event = DB::table('events')->select('events.*')->join('event_teams', 'event_teams.event_id', '=', 'events.id')->where('event_teams.user_id','=', Auth::user()->id)->whereIn('status', ["1","2"])->first();
-			 $company = DB::table('companies')->select('companies.*')->join('event_teams', 'event_teams.company_id', '=', 'companies.id')->where('event_teams.user_id','=', Auth::user()->id)->first();
-			$event_team = DB::table('event_teams')->select('users.id','users.name','users.email','event_teams.role_id')->join('users', 'event_teams.user_id', '=', 'users.id')->where('event_id','=',$event->id)->get();
-	
-			$applicants = DB::table('user_events')
-				->join('users', 'user_events.user_id', '=', 'users.id')
-				->join('user_bios', 'user_events.user_id', '=', 'user_bios.user_id')
-				->join('event_attendings', 'user_events.id', '=', 'event_attendings.uevent_id' )
-				->select('user_events.id as uev_id','user_events.*','event_attendings.status as att_status','event_attendings.id as uevatt_id', 'event_attendings.*', 'users.id as u_id', 'users.*', 'user_bios.id as ubio_id', 'user_bios.*')
-				->where('user_events.event_id','=',$event->id)
-				->where('event_attendings.interviewer_id','=',Auth::user()->id)
-				->paginate(30); */
+			
 			return view('interviewer.home');
 		}else if(Auth::user()->hasRole('hr_manager')){
 			 $event = DB::table('events')->select('events.*')->join('event_teams', 'event_teams.event_id', '=', 'events.id')->where('event_teams.user_id','=', Auth::user()->id)->whereIn('status', ["1","2","3"])->first();

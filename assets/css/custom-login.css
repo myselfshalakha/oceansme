@@ -59,12 +59,14 @@ span.invalid-feedback {margin-top: -5px;}
 .card-body .row.mb-0 .col-md-8.offset-md-4{width: 100%;}
 /*.form-control:hover{border: 1px solid #000;}*/
 .card-body button.btn.btn-primary {
-    box-shadow: 0px 0px 14px 1px rgb(51 51 51 / 10%); 
-    border: 1px solid #172d88;
-    background: #172d88;
+    box-shadow: 0px 0px 14px 1px rgb(51 51 51 / 10%);
+    border: 1px solid #0c2440;
+    background: #0c2440;
     color: #fff;
     text-transform: uppercase;
-    letter-spacing: 1px; margin-top: 0;
+    letter-spacing: 1px;
+    margin-top: 0;
+	transition: .3s;
 }
 .col-form-label, .card-body .col-md-8.offset-md-4, .form-check .form-check-label{font-size: 14px!important;}
 span.invalid-feedback {top: 146px; font-size: 10px;}
@@ -104,3 +106,24 @@ span.invalid-feedback {top: 146px; font-size: 10px;}
 .card .card-body .row.mb-3:first-child{margin-bottom: 20px;}
 .form-group-custom .input-box {display: block;}
 .form-group-custom.form-group-row .input-box{display: flex;}
+
+
+/* 15-09-2023 */
+.login .card-header {
+    color: #0c2440;
+    font-size: 20px;
+}
+.login .card-body button.btn.btn-primary:hover {
+    background: #1E73BE;
+	transition: .3s;
+	border: 1px solid #1E73BE;
+}
+.login a.btn.btn-link {
+    text-decoration: none;
+    color: #0c2440;
+	transition: .3s;
+}
+.login a.btn.btn-link:hover {
+    transition: .3s;
+    color: #1E73BE;
+}

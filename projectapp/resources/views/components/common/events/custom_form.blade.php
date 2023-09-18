@@ -1,47 +1,49 @@
 @extends('layouts.app')
 @section('content') 
-<div class="row justify-content-center">
-    <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                
-                 <a href="{{ route('admin.events',['param'=>'edit']) }}?id={{$event->id}}" class="go__back btn-user h3" title="Applicant">Go Back</a> 
+<div class="cstm_event_admin_customform cstm_common_admin">
+	<div class="row justify-content-center">
+		<div class="col-lg-12 grid-margin stretch-card">
+				  <div class="card">
+					<div class="card-body">
+					
+					 <a href="{{ route('admin.events',['param'=>'edit']) }}?id={{$event->id}}" class="go__back btn-user h3" title="Applicant">Go Back</a> 
 
-                </div>
-              </div>
-        </div>
-		 <div class="col-12 grid-margin stretch-card">
-		   <div class="card">
-                <div class="card-header">@if(isset($event)) Event Custom Form @endif</div>
+					</div>
+				  </div>
+			</div>
+			 <div class="col-12 grid-margin stretch-card">
+			   <div class="card">
+					<div class="card-header">@if(isset($event)) Event Custom Form @endif</div>
 
-                <div class="card-body">
-					<div class="row">
-							<div class="col-12">
-								@if ($errors->any())
-								    <div class="alert alert-danger">
-								        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-								        <ul>
-								            @foreach ($errors->all() as $error)
-								                <li>{{ $error }}</li>
-								            @endforeach
-								        </ul>
-								    </div>
-								@endif
-								@if(session()->has('success'))
-								    <div class="alert alert-success">
-								        {{ session()->get('success') }}
-								    </div>
-								@endif
-								
+					<div class="card-body">
+						<div class="row">
+								<div class="col-12">
+									@if ($errors->any())
+										<div class="alert alert-danger">
+											<strong>Whoops!</strong> There were some problems with your input.<br><br>
+											<ul>
+												@foreach ($errors->all() as $error)
+													<li>{{ $error }}</li>
+												@endforeach
+											</ul>
+										</div>
+									@endif
+									@if(session()->has('success'))
+										<div class="alert alert-success">
+											{{ session()->get('success') }}
+										</div>
+									@endif
+									
+								</div>
+								<div class="event-form-build-wrap form-wrapper-div"  data-action="{{route('admin.events')}}/saveCustomEventForm" data-id="{{$event->id}}"></div>
 							</div>
-							<div class="event-form-build-wrap form-wrapper-div"  data-action="{{route('admin.events')}}/saveCustomEventForm" data-id="{{$event->id}}"></div>
-						</div>
-                    
+						
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-@endsection
+	@endsection
+</div>
 
 @section('footer')
 <?php

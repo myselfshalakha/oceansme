@@ -7,7 +7,7 @@ $user_response_status=get_user_response_status();
 
 ?>
  @if(isset($event) && !empty($event)&& isset($profilestatus) && $profilestatus>='100') 
-	 
+	<div class="cstm_candidate_admin_home cstm_candidate_admin_myevents  cstm_common_admin">
 					<div class="row">
                       <div class="col-lg-12 d-flex flex-column">
                             <div class="card">
@@ -79,31 +79,39 @@ $user_response_status=get_user_response_status();
 					
                       </address>
                       <address class="text-primary">
+					  <div class="company_info">
                         <p class="fw-bold">
                           Event Name: 
                         </p>
                         <p class="mb-2">
 						{{ $event->name }} 
                         </p>
+						</div>
+						<div class="company_info">
 						<p class="fw-bold">
                           Company
                         </p>
                         <p class="mb-2">
 						{{ \App\Models\Company::find($event->company_id	)->name }} 
                         </p>
+						</div>
+						<div class="company_info">
 						<p class="fw-bold">
                           Start Date
                         </p>
                         <p class="mb-2">
 						{{ date('d M,Y',strtotime($event->start_date)) }}
                         </p>
+						</div>
+						<div class="company_info">
 						<p class="fw-bold">
                           End Date
                         </p>
                         <p class="mb-2">
 						{{ date('d M,Y',strtotime($event->end_date)) }}
                         </p>
-						
+						</div>
+						<div class="company_info">
 						<p class="fw-bold">
                           Keys
                         </p>
@@ -114,13 +122,21 @@ $user_response_status=get_user_response_status();
 							if(!empty($event->post_id)){
 								$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
 								foreach($requiredPosts as $post){
-									$postname.= $post->name . ", ";
+									$postname.= $post->name;
+									if(!empty($post->rank)){
+										$postname.= " - ".$post->rank;
+									}
+									if(!empty($post->rank_position)){
+										$postname.= " - ".$post->rank_position;
+									}
+									$postname.= ", ";
 								}
 							}
 						$postname=rtrim($postname, ", ");
 						?>
 						{{$postname}}
                         </p>
+						</div>
                       </address>
                     </div>
                     <div class="col-md-12">
@@ -252,6 +268,12 @@ $user_response_status=get_user_response_status();
 														@foreach($requiredPosts as $post)
 															 @if($user_events[0]->post_apply==$post->id)
 																{{\App\Models\Department::find($user_events[0]->dep_id)->name}} - {{$post->name}}
+																@if(!empty($post->rank))
+																	- {{$post->rank}}
+																@endif
+																@if(!empty($post->rank_position))
+																	- {{$post->rank_position}}
+																@endif
 															@endif
 														@endforeach
 													@else
@@ -328,6 +350,12 @@ $user_response_status=get_user_response_status();
 												@if($post->id==$applicant->post_assigned) 
 												<span class="">
 													{{$post->name}}
+													@if(!empty($post->rank))
+														- {{$post->rank}}
+													@endif
+													@if(!empty($post->rank_position))
+														- {{$post->rank_position}}
+													@endif
 												  </span>
 												   @endif 
 												@endforeach
@@ -420,3 +448,4 @@ $user_response_status=get_user_response_status();
 	
 @endsection
 
+</div>

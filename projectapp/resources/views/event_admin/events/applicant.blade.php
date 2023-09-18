@@ -127,7 +127,16 @@ $user_response_status=get_user_response_status();
 												<td>{{\App\Models\Country::find($applicant->nationality)->name ?? "n/a"}}</td>
 
 												<td>{{ $applicant->position ?? 'n/a'}}</td>
-												<td>{{ \App\Models\Posts::find($applicant->post_apply)->name}}</td>
+												<td>
+												<?php $post= \App\Models\Posts::find($applicant->post_apply) ?>
+												{{ $post->name}}
+												@if(!empty($post->rank))
+													- {{$post->rank}}
+												@endif
+												@if(!empty($post->rank_position))
+													- {{$post->rank_position}}
+												@endif
+												</td>
 												<td>{{ getExperienceText($applicant->exp_years,$applicant->exp_months) }}</td>
 												<!--td>
 												<select>
@@ -165,13 +174,12 @@ $user_response_status=get_user_response_status();
                           </div>
                         </div>
 @endsection
-
 @section('footer')
 
 <!-- Modal for Resume Preview -->
 
 <div class="modal fade" id="applicant_resume_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_resume_modalLabel" aria-hidden="true">
-  <div class="modal-dialog  modal-lg" role="document">
+  <div class="modal-dialog applicant_modal modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_resume_modalLabel">Resume Preview</h5>

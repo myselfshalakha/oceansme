@@ -6,6 +6,7 @@ $hiddenStatus=getHiddenUserEventStatus();
 $user_response_status=get_user_response_status();
 $nofilter=["5","9","7","10"];
 ?>
+<div class="cstm_evaluator_admin_applicant cstm_evaluator_admin_home cstm_common_admin">
 <div class="row">
 	<div class="col-sm-12">
 	  <div class="home-tab">
@@ -103,7 +104,16 @@ $nofilter=["5","9","7","10"];
 							<td>{{ $applicant->email }}</td>
 							<td>{{\App\Models\Country::find($applicant->nationality)->name ?? "n/a"}}</td>
 							<td>{{ $applicant->position ?? 'n/a'}}</td>
-							<td>{{ \App\Models\Posts::find($applicant->post_apply)->name}}</td>
+							<td>
+							<?php $post= \App\Models\Posts::find($applicant->post_apply) ?>
+							{{ $post->name}}
+							@if(!empty($post->rank))
+								- {{$post->rank}}
+							@endif
+							@if(!empty($post->rank_position))
+								- {{$post->rank_position}}
+							@endif
+							</td>
 							<td>{{ getExperienceText($applicant->exp_years,$applicant->exp_months) }}</td>
 						
 							<td>
@@ -137,12 +147,13 @@ $nofilter=["5","9","7","10"];
 		</div>
 	  </div>
 </div>
+</div>
 @endsection
 
 @section('footer')
 <!-- Modal for Notify Applicant -->
 <div class="modal fade" id="applicant_email_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_email_modalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog applicant_modal" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_email_modalLabel">Notify Applicant</h5>
@@ -170,7 +181,7 @@ $nofilter=["5","9","7","10"];
 <!-- Modal for Resume Preview -->
 
 <div class="modal fade" id="applicant_resume_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_resume_modalLabel" aria-hidden="true">
-  <div class="modal-dialog  modal-lg" role="document">
+  <div class="modal-dialog applicant_modal modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_resume_modalLabel">Resume Preview</h5>
@@ -187,7 +198,7 @@ $nofilter=["5","9","7","10"];
 
 <!-- Modal for Change Status Appliccant -->
 <div class="modal fade" id="applicant_event_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_event_modalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog applicant_modal" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_event_modalLabel">Change event Status</h5>

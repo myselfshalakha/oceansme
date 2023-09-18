@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('content') 
-<div class="row justify-content-center">
+<div class="cstm_events_admin_createalist cstm_common_admin">
+	<div class="row justify-content-center">
 
 		<div class="col-lg-12 grid-margin stretch-card table_record_list">
             <div class="card">
@@ -20,7 +21,7 @@
 										<th>Company</th>
 										<th>Event Admin</th>
 										<th>Evaluator</th>
-										<th>Post</th>
+										<th>Postitions</th>
 										<th>Action</th>
                                       </tr>
                                     </thead>
@@ -28,7 +29,7 @@
                                      @if(isset($events) && count($events)!=0)
 										@foreach($events as $event)
 											<tr>
-												<td>{{ $event->name }}</br>
+												<td>{{ $event->name }}
 												<?php echo get_event_status_badge($event->status) ?>
 												</td>
 												<td>{{ $event->start_date }}</td>
@@ -42,8 +43,16 @@
 															<?php
 																$postname="";
 																if(!empty($event->post_id)){
-																	foreach(unserialize($event->post_id) as $post_id){
-																		$postname.= \App\Models\Posts::find($post_id)->name . ", ";
+																	$requiredPosts=\App\Models\Posts::whereIn("id",unserialize($event->post_id))->get();
+																	foreach($requiredPosts as $post){
+																		$postname.= $post->name;
+																		if(!empty($post->rank)){
+																			$postname.= " - ".$post->rank;
+																		}
+																		if(!empty($post->rank_position)){
+																			$postname.= " - ".$post->rank_position;
+																		}
+																		$postname.= ", ";
 																	}
 																}
 															$postname=rtrim($postname, ", ");
@@ -71,4 +80,5 @@
 		</div>
 		
 	</div>
+</div>
 @endsection

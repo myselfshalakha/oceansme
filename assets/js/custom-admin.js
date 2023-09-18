@@ -254,42 +254,7 @@ jQuery(document).ready(function() {
 		});
     });
 	
-	//change final salary
-	jQuery(document).on('click','#save__salary',function(){
-        var el = jQuery(this);
-        var id=jQuery(this).attr("data-id");
-        var action=jQuery(this).attr("data-action");
-        var salary=jQuery(".salary_final").val();
-		jQuery.ajax({
-			method:'POST',  
-			url : action,
-			data : {id:id,salary:salary },
-			dataType: 'JSON',
-			success: function(data){
-				Swal.fire(
-					  'Succeed',
-					  data.message,
-					  'success'
-					);
-				if(data.success === true){
-					setTimeout(function(){
-								
-							location.reload();
-								
-							},2500);
-				}
-				/* Messenger.options = {
-					extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
-					theme: 'flat'
-				}
-				Messenger().post({
-					message: data.message,
-					type: 'success',
-					showCloseButton: true
-				}); */
-			}   
-		});
-    });
+	
 	
 	//send event notify to candidate  by hr
 	jQuery(document).on('click','#send_applicant_notify',function(){
@@ -846,19 +811,40 @@ jQuery(document).ready(function() {
 		
 		jQuery(document).on('change','.post_assign_select',function(){
 			var el = jQuery(this);
-			var postid=el.val();
+			var salaryid=el.val();
 			var action=el.attr("data-action");
 			var id=el.attr("data-id");
 			jQuery.ajax({
 				method:'POST',  
 				url : action,
 				dataType : 'json',
-				data : {id:id,postid:postid },
+				data : {id:id,salaryid:salaryid },
 				success: function(data){
 					jQuery(".salary_details_applicant").html(data.salary);
 					jQuery(".shuffle_question_items").html(data.questions);
 				}   
 			});
-		});	   
+		});	
 
+
+			var flagTableLoad=false;
+			 jQuery('#nav-salary_system-tab[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+				console.log(flagTableLoad);
+			if(flagTableLoad == false){
+				flagTableLoad=true;
+				var company_salary_list= jQuery(".company_salary_list").DataTable({
+					 "pageLength": 50,
+					 "aaSorting": [],
+				    "scrollX": true,
+					 "ordering": false,
+					 'lengthMenu': [
+						 [1,5, 25, 50, 100, 200, 500, -1],
+						[1,5, 25, 50, 100, 200, 500, 'All']
+					]
+					
+				});
+				
+			}
+			});	 
+			
 });

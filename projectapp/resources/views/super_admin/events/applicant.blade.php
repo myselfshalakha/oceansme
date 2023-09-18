@@ -5,6 +5,7 @@ $userEventStatus=isset($_GET["status"])?$_GET["status"]:"";
 $hiddenStatus=getHiddenUserEventStatus();
 $user_response_status=get_user_response_status();
 ?>
+<div class="cstm_events_admin_applicant cstm_common_admin">
   <div class="row">
             <div class="col-sm-12">
               <div class="home-tab">
@@ -118,9 +119,7 @@ $user_response_status=get_user_response_status();
 												</td>
 												<td>{{ $applicant->name }}
 													 @if(isset($applicant->status)) 
-													<p class="card-text">
 													 <?php echo get_applicant_status_badge($applicant->status,$user_response_status)  ?>
-													 </p>
 													 @endif
 												</td>
 												
@@ -128,7 +127,16 @@ $user_response_status=get_user_response_status();
 												<td>{{\App\Models\Country::find($applicant->nationality)->name ?? "n/a"}}</td>
 
 												<td>{{ $applicant->position ?? 'n/a'}}</td>
-												<td>{{ \App\Models\Posts::find($applicant->post_apply)->name}}</td>
+												<td>
+												<?php $post= \App\Models\Posts::find($applicant->post_apply) ?>
+												{{ $post->name}}
+												@if(!empty($post->rank))
+													- {{$post->rank}}
+												@endif
+												@if(!empty($post->rank_position))
+													- {{$post->rank_position}}
+												@endif
+												</td>
 												<td>{{ getExperienceText($applicant->exp_years,$applicant->exp_months) }}</td>
 												<!--td>
 												<select>
@@ -152,7 +160,7 @@ $user_response_status=get_user_response_status();
 												@endif
 												
 												</td>
-												<td>
+												<td class="change_align">
 												<select  class="applicanteventStatus">
 													@foreach($status as $k=>$v)
 														@if(in_array($k,$hiddenStatus))
@@ -179,7 +187,7 @@ $user_response_status=get_user_response_status();
 
 @section('footer')
 <div class="modal fade" id="applicant_resume_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_resume_modalLabel" aria-hidden="true">
-  <div class="modal-dialog  modal-lg" role="document">
+  <div class="modal-dialog applicant_modal modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_resume_modalLabel">Resume Preview</h5>
@@ -193,10 +201,10 @@ $user_response_status=get_user_response_status();
     </div>
   </div>
 </div>
-
+</div>
 <!-- Modal for Change Status Appliccant -->
 <div class="modal fade" id="applicant_event_modal" tabindex="-1" role="dialog" aria-labelledby="applicant_event_modalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog applicant_modal" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="applicant_event_modalLabel">Change event Status</h5>
